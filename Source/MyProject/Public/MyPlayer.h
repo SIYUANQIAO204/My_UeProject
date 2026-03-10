@@ -8,6 +8,7 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+struct FInputActionValue;
 
 UCLASS()
 class MYPROJECT_API AMyPlayer : public ACharacter
@@ -22,6 +23,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void Move(const FInputActionValue& value);
+
+	void Look(const FInputActionValue& value);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -31,6 +35,16 @@ public:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USpringArmComponent> CameraBoom;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FollowCamera;
+
+	UPROPERTY(EditDefaultsOnly,Category = "Input")
+	TObjectPtr<UInputMappingContext> DefaultMapping;
+
+	UPROPERTY(EditDefaultsOnly,Category = "Input")
+	TObjectPtr<UInputAction> MoveAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> LookAction;
 };
