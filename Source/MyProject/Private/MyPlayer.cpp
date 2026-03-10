@@ -43,8 +43,9 @@ void AMyPlayer::Move(const FInputActionValue& value)
 	FVector2D MovementVector = value.Get<FVector2D>();
 	if (Controller) 
 	{
-		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
-		AddMovementInput(GetActorRightVector(), MovementVector.X);
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	}
 }
 
