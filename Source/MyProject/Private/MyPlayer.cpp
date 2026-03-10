@@ -41,15 +41,21 @@ void AMyPlayer::BeginPlay()
 void AMyPlayer::Move(const FInputActionValue& value)
 {
 	FVector2D MovementVector = value.Get<FVector2D>();
-	AddMovementInput(GetActorForwardVector(), MovementVector.Y);
-	AddMovementInput(GetActorRightVector(), MovementVector.X);
+	if (Controller) 
+	{
+		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
+		AddMovementInput(GetActorRightVector(), MovementVector.X);
+	}
 }
 
 void AMyPlayer::Look(const FInputActionValue& value)
 {
 	FVector2D LookAxisVector = value.Get<FVector2D>();
-	AddControllerYawInput(LookAxisVector.X);
-	AddControllerPitchInput(LookAxisVector.Y);
+	if (Controller)
+	{
+		AddControllerYawInput(LookAxisVector.X);
+		AddControllerPitchInput(LookAxisVector.Y);
+	}
 }
 
 // Called every frame
