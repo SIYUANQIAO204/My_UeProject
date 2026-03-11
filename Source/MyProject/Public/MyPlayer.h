@@ -9,8 +9,8 @@
 class UCameraComponent;
 class USpringArmComponent;
 class UInputMappingContext;
-struct FInputActionValue;
 class UInputAction;
+struct FInputActionValue;
 
 UCLASS()
 class MYPROJECT_API AMyPlayer : public ACharacter
