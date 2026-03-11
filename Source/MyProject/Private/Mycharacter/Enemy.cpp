@@ -4,12 +4,14 @@
 #include "Mycharacter/Enemy.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include  "Mycharacter/SightComponent.h"
 // Sets default values
 AEnemy::AEnemy()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	SightComponent = CreateDefaultSubobject<USightComponent>(TEXT("Sight Component"));
+	SightComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -17,8 +19,9 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	TargetCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	SightComponent->SetTargetActor(TargetCharacter);
 }
-
+/*
 bool AEnemy::LineTraceActor(AActor* TargetActor)
 {
 	if(TargetActor == nullptr)
@@ -39,7 +42,8 @@ bool AEnemy::LineTraceActor(AActor* TargetActor)
 	}
 	return false;
 }
-
+*/
+/*
 bool AEnemy::CanSeeActor(const AActor* TargetActor, FVector Start, FVector End) const
 {
 	if (TargetActor == nullptr)
@@ -54,12 +58,12 @@ bool AEnemy::CanSeeActor(const AActor* TargetActor, FVector Start, FVector End) 
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red);
 	return !HitResult.bBlockingHit;
 }
-
+*/
 // Called every frame
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	bCanSeePlayer = LineTraceActor(TargetCharacter);
+	bCanSeePlayer = SightComponent->IsTargetInSight();
 	if (bCanSeePlayer)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy can see the player!"));

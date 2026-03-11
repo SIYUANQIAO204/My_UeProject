@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "Enemy.generated.h"
 
+class USightComponent;
+
 UCLASS()
 class MYPROJECT_API AEnemy : public ACharacter
 {
@@ -15,15 +17,18 @@ public:
 	// Sets default values for this character's properties
 	AEnemy();
 
-	bool LineTraceActor(AActor* TargetActor);
+	//bool LineTraceActor(AActor* TargetActor);
 
-	bool CanSeeActor(const AActor* TargetActor, FVector Start, FVector End) const;
+	//bool CanSeeActor(const AActor* TargetActor, FVector Start, FVector End) const;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	bool bCanSeePlayer = false;
+
+	UPROPERTY (EditAnywhere)
+	TObjectPtr<USightComponent> SightComponent;
 
 public:	
 	// Called every frame
@@ -33,4 +38,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 private:
 	TObjectPtr<ACharacter> TargetCharacter;
+
+
 };
