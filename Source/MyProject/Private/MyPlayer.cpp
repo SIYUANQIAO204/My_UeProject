@@ -6,6 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AMyPlayer::AMyPlayer()
@@ -18,7 +19,16 @@ AMyPlayer::AMyPlayer()
 	CameraBoom->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f)); // Rotate the arm to look down at the character
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
-	UE_LOG(LogTemp, Warning, TEXT("AMyPlayer constructor called"));
+	//避免角色旋转时相机也旋转
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+	//相机杆旋转，相机不转
+	CameraBoom->bUsePawnControlRotation = true;
+	FollowCamera->bUsePawnControlRotation = false;
+	//角色随移动转向
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 300.0f, 0.0f);
 }
 
 // Called when the game starts or when spawned
