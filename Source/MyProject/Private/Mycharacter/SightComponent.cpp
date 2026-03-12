@@ -28,6 +28,18 @@ bool USightComponent::LinTrace()
 	if (!TargetActor) return false;
 	FVector Start = GetComponentLocation();
 	FVector End = TargetActor->GetActorLocation();
+	FVector ForwardVector = GetOwner()->GetActorForwardVector();
+	FVector DirectionToTarget = (End - Start).GetSafeNormal();
+	float Distance = FVector::Distance(Start, End);
+	if (Distance > SightRange)
+	{
+		return false;
+	}
+	float AngleToTarget = FMath::RadiansToDegrees(acosf(FVector::DotProduct(ForwardVector, DirectionToTarget)));
+	if (AngleToTarget > SightAngle / 2)
+	{
+		return false;
+	}
 	TArray<const AActor*> IgnoreActors;
 	IgnoreActors.Add(GetOwner());
 	IgnoreActors.Add(TargetActor);

@@ -27,6 +27,10 @@ protected:
 	TObjectPtr<AActor> TargetActor;
 	bool bIsTargetInSight = false;
 
+	float SightRange = 1000.0f;
+
+	float SightAngle = 90.0f;
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
