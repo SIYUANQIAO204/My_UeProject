@@ -7,21 +7,23 @@
 #include  "Mycharacter/SightComponent.h"
 #include "Projectile/BallProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 // Sets default values
 AEnemy::AEnemy()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	SightComponent = CreateDefaultSubobject<USightComponent>(TEXT("Sight Component"));
+	SightComponent = CreateDefaultSubobject<USightComponent>(TEXT("SightComponent"));
 	SightComponent->SetupAttachment(RootComponent);
+	GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
 }
 
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	TargetCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	SightComponent->SetTargetActor(TargetCharacter);
+	InitTargertCharacter();
+	
 }
 /*
 bool AEnemy::LineTraceActor(AActor* TargetActor)
@@ -62,18 +64,25 @@ bool AEnemy::CanSeeActor(const AActor* TargetActor, FVector Start, FVector End) 
 }
 */
 
+void AEnemy::InitTargertCharacter()
+{
+	
+	TargetCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
+	SightComponent->SetTargetActor(TargetCharacter);
+}
+
 void AEnemy::ShootBall()
 {
 	if (BallProjectileClass)
 	{
 		FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 40.0f;
 		FRotator SpawnRotation = GetActorRotation();
-		/*FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;*/
-		//GetWorld()->SpawnActor<ABallProjectile>(BallProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
-		FTransform SpawnTransform(SpawnRotation, SpawnLocation);
-		ABallProjectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<ABallProjectile>(BallProjectileClass, SpawnTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
-		SpawnedProjectile->FinishSpawning(SpawnTransform);
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		GetWorld()->SpawnActor<ABallProjectile>(BallProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+		//FTransform SpawnTransform(SpawnRotation, SpawnLocation);
+		//ABallProjectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<ABallProjectile>(BallProjectileClass, SpawnTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
+		//SpawnedProjectile->FinishSpawning(SpawnTransform);
 
 	}
 }
@@ -88,6 +97,10 @@ void AEnemy::Tick(float DeltaTime)
 	{
 		if (bCanSeePlayer)
 		{
+			FVector Direction = TargetCharacter->GetActorLocation() - GetActorLocation();
+			Direction.Z = 0; // 如果只想水平旋转
+			FRotator NewRotation = Direction.Rotation();
+			SetActorRotation(FMath::RInterpTo(GetActorRotation(), NewRotation, DeltaTime, 5.f));
 			GetWorldTimerManager().SetTimer(ShootTimerHandle, this, &AEnemy::ShootBall, FireDelay, true, ShootInterval);
 
 		}

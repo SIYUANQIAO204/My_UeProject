@@ -9,7 +9,6 @@ USightComponent::USightComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
 	// ...
 }
 
@@ -35,21 +34,26 @@ bool USightComponent::LinTrace()
 	{
 		return false;
 	}
-	float AngleToTarget = FMath::RadiansToDegrees(acosf(FVector::DotProduct(ForwardVector, DirectionToTarget)));
-	if (AngleToTarget > SightAngle / 2)
+	float Dot = FVector::DotProduct(ForwardVector, DirectionToTarget);
+	float CosHalfAngle = FMath::Cos(FMath::DegreesToRadians(SightAngle * 0.5f));
+
+	if (Dot < CosHalfAngle)
 	{
 		return false;
 	}
 	TArray<const AActor*> IgnoreActors;
 	IgnoreActors.Add(GetOwner());
 	IgnoreActors.Add(TargetActor);
-	bIsTargetInSight = CanSeeTarget(Start, End, IgnoreActors);
-	if (bIsTargetInSight)
+	bool bCanSee = CanSeeTarget(Start, End, IgnoreActors);
+	if (bCanSee)
 	{
 		FRotator LookAtRotation = (End - Start).Rotation();
-		GetOwner()->SetActorRotation(LookAtRotation);
+
+		FRotator NewRotation = GetOwner()->GetActorRotation();
+		NewRotation.Yaw = LookAtRotation.Yaw;
+		GetOwner()->SetActorRotation(NewRotation);
 	}
-	return bIsTargetInSight;
+	return bCanSee;
 }
 
 bool USightComponent::CanSeeTarget(FVector Start, FVector End, TArray<const AActor*> IgnoreActors) const
@@ -61,6 +65,7 @@ bool USightComponent::CanSeeTarget(FVector Start, FVector End, TArray<const AAct
 	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams);
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red);
 	return !HitResult.bBlockingHit;
+
 }
 
 
@@ -68,15 +73,15 @@ bool USightComponent::CanSeeTarget(FVector Start, FVector End, TArray<const AAct
 void USightComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	bIsTargetInSight = LinTrace();
-	FVector Start = GetOwner()->GetActorLocation();
-	FVector Forward = GetOwner()->GetActorForwardVector();
 
+	bIsTargetInSight = LinTrace();
+	FVector Start = GetComponentLocation();
+	FVector Forward = GetComponentRotation().Vector();
 	DrawDebugCone(
 		GetWorld(),
 		Start,
 		Forward,
-		SightAngle,
+		SightRange,
 		FMath::DegreesToRadians(SightAngle / 2),
 		FMath::DegreesToRadians(SightAngle / 2),
 		20,

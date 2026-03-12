@@ -39,6 +39,8 @@ protected:
 	float ShootInterval = 3.0f;
 	float FireDelay = 0.5f;
 
+	void InitTargertCharacter();
+
 	UPROPERTY (EditAnywhere)
 	TObjectPtr<USightComponent> SightComponent;
 

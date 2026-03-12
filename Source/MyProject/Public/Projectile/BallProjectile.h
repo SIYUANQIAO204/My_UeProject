@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
+/*#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "BallProjectile.generated.h"
 
@@ -19,10 +19,8 @@ public:
 	ABallProjectile();
 
 private:
-	/** Sphere collision component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ball", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr <USphereComponent> SphereComponent;
-	/** Projectile movement component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ball", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
 
@@ -37,4 +35,50 @@ public:
 	FORCEINLINE UProjectileMovementComponent* GetProjectileMovementComponent() const { return ProjectileMovementComponent; }
 
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+};
+*/
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "BallProjectile.generated.h"
+
+class USphereComponent;
+class UProjectileMovementComponent;
+
+UCLASS()
+class MYPROJECT_API ABallProjectile : public AActor
+{
+	GENERATED_BODY()
+
+public:
+	ABallProjectile();
+
+private:
+
+	UPROPERTY(VisibleAnywhere, Category = "Ball")
+	TObjectPtr<USphereComponent> SphereComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Ball")
+	TObjectPtr<UProjectileMovementComponent> ProjectileMovementComponent;
+
+protected:
+
+	virtual void BeginPlay() override;
+
+	/** 子弹检测玩家 */
+	UFUNCTION()
+	void OnOverlapBegin(
+		UPrimitiveComponent* OverlappedComp,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult
+	);
+
+public:
+
+	virtual void Tick(float DeltaTime) override;
 };

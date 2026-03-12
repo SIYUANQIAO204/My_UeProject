@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AMyPlayer::AMyPlayer()
@@ -31,6 +32,7 @@ AMyPlayer::AMyPlayer()
 	//角色随移动转向
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 300.0f, 0.0f);
+	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
 }
 
 // Called when the game starts or when spawned
