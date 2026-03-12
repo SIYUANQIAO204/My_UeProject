@@ -7,6 +7,7 @@
 #include "Enemy.generated.h"
 
 class USightComponent;
+class ABallProjectile;
 
 UCLASS()
 class MYPROJECT_API AEnemy : public ACharacter
@@ -25,7 +26,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ABallProjectile> BallProjectileClass;
+
+	void ShootBall();
+
 	bool bCanSeePlayer = false;
+	bool bPreviousCanSeePlayer = false;
+
+	FTimerHandle ShootTimerHandle;
+
+	float ShootInterval = 3.0f;
+	float FireDelay = 0.5f;
 
 	UPROPERTY (EditAnywhere)
 	TObjectPtr<USightComponent> SightComponent;

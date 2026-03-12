@@ -5,6 +5,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include  "Mycharacter/SightComponent.h"
+#include "Projectile/BallProjectile.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -59,19 +61,41 @@ bool AEnemy::CanSeeActor(const AActor* TargetActor, FVector Start, FVector End) 
 	return !HitResult.bBlockingHit;
 }
 */
+
+void AEnemy::ShootBall()
+{
+	if (BallProjectileClass)
+	{
+		FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 40.0f;
+		FRotator SpawnRotation = GetActorRotation();
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		GetWorld()->SpawnActor<ABallProjectile>(BallProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+		FTransform SpawnTransform(SpawnRotation, SpawnLocation);
+		ABallProjectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<ABallProjectile>(BallProjectileClass, SpawnTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
+		SpawnedProjectile->FinishSpawning(SpawnTransform);
+
+	}
+}
+
 // Called every frame
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	bPreviousCanSeePlayer = bCanSeePlayer;
 	bCanSeePlayer = SightComponent->IsTargetInSight();
-	if (bCanSeePlayer)
+	if (bCanSeePlayer != bPreviousCanSeePlayer)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy can see the player!"));
+		if (bCanSeePlayer)
+		{
+			GetWorldTimerManager().SetTimer(ShootTimerHandle, this, &AEnemy::ShootBall, FireDelay, true, ShootInterval);
 
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy can't see the player!"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Enemy lost sight of the player!"));
+			GetWorldTimerManager().ClearTimer(ShootTimerHandle);
+		}
 	}
 }
 
