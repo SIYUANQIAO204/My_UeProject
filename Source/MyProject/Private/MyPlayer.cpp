@@ -94,3 +94,13 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	}
 }
 
+void AMyPlayer::Death_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player has died!"));
+}
+
+void AMyPlayer::Damage_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player has taken damage!"));
+}
+

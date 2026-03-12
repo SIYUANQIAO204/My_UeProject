@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "../Interface/HealthInterface.h"
 #include "MyPlayer.generated.h"
 
 class UCameraComponent;
@@ -13,7 +14,7 @@ class UInputAction;
 struct FInputActionValue;
 
 UCLASS()
-class MYPROJECT_API AMyPlayer : public ACharacter
+class MYPROJECT_API AMyPlayer : public ACharacter, public IHealthInterface
 {
 	GENERATED_BODY()
 
@@ -21,6 +22,9 @@ public:
 	// Sets default values for this character's properties
 	AMyPlayer();
 
+	// 通过 IHealthInterface 继承
+	void Death_Implementation() override;
+	void Damage_Implementation() override;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -49,4 +53,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> LookAction;
+
+	
 };

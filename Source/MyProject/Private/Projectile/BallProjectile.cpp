@@ -130,7 +130,7 @@ void ABallProjectile::OnOverlapBegin(
 
 		// 这里可以调用玩家受伤函数
 		// Player->TakeDamage(...);
-
+		Player->Damage_Implementation();
 		Destroy();
 	}
 }
