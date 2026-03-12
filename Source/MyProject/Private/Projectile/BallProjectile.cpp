@@ -17,6 +17,9 @@ ABallProjectile::ABallProjectile()
 	SetRootComponent(SphereComponent);
 	SphereComponent->SetCollisionProfileName(TEXT("Ball"));
 
+	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	SphereComponent->SetCollisionResponseToAllChannels(ECR_Block);
+
 	SphereComponent->SetSimulatePhysics(true);
 	SphereComponent->SetNotifyRigidBodyCollision(true);
 	SphereComponent->OnComponentHit.AddDynamic(this, &ABallProjectile::OnHit);

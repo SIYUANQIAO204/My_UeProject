@@ -68,9 +68,9 @@ void AEnemy::ShootBall()
 	{
 		FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 40.0f;
 		FRotator SpawnRotation = GetActorRotation();
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;
-		GetWorld()->SpawnActor<ABallProjectile>(BallProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+		/*FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;*/
+		//GetWorld()->SpawnActor<ABallProjectile>(BallProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
 		FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 		ABallProjectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<ABallProjectile>(BallProjectileClass, SpawnTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
 		SpawnedProjectile->FinishSpawning(SpawnTransform);
