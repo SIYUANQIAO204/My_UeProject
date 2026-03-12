@@ -64,7 +64,7 @@ void ABallProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UP
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "MyPlayer.h"
-
+#include "Component/HealthComponent.h"
 // 构造函数
 ABallProjectile::ABallProjectile()
 {
@@ -128,9 +128,13 @@ void ABallProjectile::OnOverlapBegin(
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Player Hit!"));
 
-		// 这里可以调用玩家受伤函数
+		// 调用玩家受伤函数
 		// Player->TakeDamage(...);
-		Player->Damage_Implementation();
+		UHealthComponent* HealthComp = Player->FindComponentByClass<UHealthComponent>();
+		if(HealthComp)
+		{
+			HealthComp->TakeDamage(Damage);
+		}
 		Destroy();
 	}
 }

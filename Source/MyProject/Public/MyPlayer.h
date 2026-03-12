@@ -11,6 +11,7 @@ class UCameraComponent;
 class USpringArmComponent;
 class UInputMappingContext;
 class UInputAction;
+class UHealthComponent;
 struct FInputActionValue;
 
 UCLASS()
@@ -28,6 +29,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivate))
+	TObjectPtr<UHealthComponent> HealthComponent;
 
 	void Move(const FInputActionValue& value);
 

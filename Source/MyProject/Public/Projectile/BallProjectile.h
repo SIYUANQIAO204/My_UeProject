@@ -55,6 +55,10 @@ class MYPROJECT_API ABallProjectile : public AActor
 public:
 	ABallProjectile();
 
+protected:
+	UPROPERTY(EditAnywhere, Category = "Damage",meta = (AllowPrivateAccess = "true"))
+	float Damage = 20.f;
+
 private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Ball")

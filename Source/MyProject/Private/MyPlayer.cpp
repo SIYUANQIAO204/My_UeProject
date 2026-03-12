@@ -8,6 +8,8 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Component/HealthComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AMyPlayer::AMyPlayer()
@@ -33,6 +35,9 @@ AMyPlayer::AMyPlayer()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 300.0f, 0.0f);
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
+
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HP"));
+
 }
 
 // Called when the game starts or when spawned
@@ -97,6 +102,7 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AMyPlayer::Death_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player has died!"));
+	UKismetSystemLibrary::QuitGame(this, nullptr, EQuitPreference::Quit, true);
 }
 
 void AMyPlayer::Damage_Implementation()
