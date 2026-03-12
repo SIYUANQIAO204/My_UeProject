@@ -18,8 +18,12 @@ public class MyProject : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
+			"Slate",
+			"HeadMountedDisplay",
+			"UMG",
+            "SlateCore",
 			"Slate"
-		});
+        });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
