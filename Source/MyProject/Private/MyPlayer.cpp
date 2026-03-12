@@ -16,7 +16,7 @@ AMyPlayer::AMyPlayer()
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = 400.0f; // The camera follows at this distance behind the character
-	CameraBoom->SetRelativeRotation(FRotator(-80, 0.f, 0.f));
+	//CameraBoom->SetRelativeRotation(FRotator(-80, 0.f, 0.f));
 	CameraBoom->SetRelativeRotation(FRotator(-45.0f, 0.0f, 0.0f)); // Rotate the arm to look down at the character
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation

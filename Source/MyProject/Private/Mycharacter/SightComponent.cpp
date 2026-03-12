@@ -2,7 +2,7 @@
 
 
 #include "Mycharacter/SightComponent.h"
-
+#include "DrawDebugHelpers.h"
 // Sets default values for this component's properties
 USightComponent::USightComponent()
 {
@@ -69,6 +69,23 @@ void USightComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	bIsTargetInSight = LinTrace();
+	FVector Start = GetOwner()->GetActorLocation();
+	FVector Forward = GetOwner()->GetActorForwardVector();
+
+	DrawDebugCone(
+		GetWorld(),
+		Start,
+		Forward,
+		SightAngle,
+		FMath::DegreesToRadians(SightAngle / 2),
+		FMath::DegreesToRadians(SightAngle / 2),
+		20,
+		FColor::Green,
+		false,
+		-1,
+		0,
+		1
+	);
 	// ...
 }
 
