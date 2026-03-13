@@ -8,6 +8,7 @@
 
 class UMyRestartWidget;
 class UMyHealthWidget;
+class AMyOwnHUD;
 /**
  * 
  */
@@ -40,4 +41,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UMyHealthWidget> HealthWidget;
+
+	UPROPERTY()
+	TObjectPtr<AMyOwnHUD> MyOwnHUD;
 };

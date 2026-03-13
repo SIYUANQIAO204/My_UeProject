@@ -4,6 +4,7 @@
 #include "MyCPP/MyPlayerController.h"
 #include "HUD/MyRestartWidget.h"
 #include "HUD/MyHealthWidget.h"
+#include "HUD/MyHUD.h"
 
 void AMyPlayerController::OnPossess(APawn* InPawn)
 {
@@ -11,6 +12,22 @@ void AMyPlayerController::OnPossess(APawn* InPawn)
 	if(InPawn)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Pawn's Location: %s"), *InPawn->GetActorLocation().ToString());
+	}
+}
+
+void AMyPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	//if (HealthWidgetClass != nullptr)
+	//{
+	//	HealthWidget = CreateWidget<UMyHealthWidget>(this, HealthWidgetClass);
+	//	HealthWidget->AddToViewport();
+	//	
+	//}
+	MyOwnHUD = Cast<AMyOwnHUD>(GetHUD());
+	if (MyOwnHUD)
+	{
+		MyOwnHUD->CreateHealthWidget();
 	}
 }
 
@@ -40,20 +57,10 @@ void AMyPlayerController::DestroyRestartWidget()
 
 void AMyPlayerController::UpdateHealthWidget(float HealthPercent)
 {
-	if (HealthWidgetClass != nullptr)
+	if (MyOwnHUD != nullptr)
 	{
-		HealthWidget->UpdateHealthBar(HealthPercent);
+		MyOwnHUD->UpdateHealthWidget(HealthPercent);
 	}
 }
 
-void AMyPlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-	if (HealthWidgetClass != nullptr)
-	{
-		HealthWidget = CreateWidget<UMyHealthWidget>(this, HealthWidgetClass);
-		HealthWidget->AddToViewport();
-		
-	}
 
-}
