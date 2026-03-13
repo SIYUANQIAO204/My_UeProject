@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "MyPlayerController.generated.h"
 
+class UMyRestartWidget;
 /**
  * 
  */
@@ -15,4 +16,16 @@ class MYPROJECT_API AMyPlayerController : public APlayerController
 	GENERATED_BODY()
 public:
 	virtual void OnPossess(APawn* InPawn) override;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UMyRestartWidget> RestartWidgetClass;
+
+	void CreateRestartWidget();
+	
+	void DestroyRestartWidget();
+
+private:
+
+	UPROPERTY()
+	TObjectPtr<UMyRestartWidget> RestartWidget;
 };

@@ -2,6 +2,7 @@
 
 
 #include "MyCPP/MyPlayerController.h"
+#include "HUD/MyRestartWidget.h"
 
 void AMyPlayerController::OnPossess(APawn* InPawn)
 {
@@ -9,6 +10,29 @@ void AMyPlayerController::OnPossess(APawn* InPawn)
 	if(InPawn)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Pawn's Location: %s"), *InPawn->GetActorLocation().ToString());
-		InPawn->SetActorLocation(FVector(0.f, 0.f, 0.f));
 	}
+}
+
+void AMyPlayerController::CreateRestartWidget()
+{
+	if (RestartWidgetClass != nullptr)
+	{
+		SetPause(true);
+		SetInputMode(FInputModeUIOnly());
+
+		bShowMouseCursor = true;
+		RestartWidget = CreateWidget<UMyRestartWidget>(this, RestartWidgetClass);
+		RestartWidget->AddToViewport();
+
+	}
+	
+}
+
+void AMyPlayerController::DestroyRestartWidget()
+{
+	RestartWidget->RemoveFromParent();
+	RestartWidget->Destruct();
+	SetPause(false);
+	SetInputMode(FInputModeGameOnly());
+	bShowMouseCursor = false;
 }

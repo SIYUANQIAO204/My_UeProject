@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Component/HealthComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "MyCpp/MyPlayerController.h"
 
 // Sets default values
 AMyPlayer::AMyPlayer()
@@ -102,7 +103,12 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AMyPlayer::Death_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player has died!"));
-	UKismetSystemLibrary::QuitGame(this, nullptr, EQuitPreference::Quit, true);
+	//UKismetSystemLibrary::QuitGame(this, nullptr, EQuitPreference::Quit, true);
+	AMyPlayerController* PlayerController = Cast<AMyPlayerController>(GetController());
+	if (PlayerController)
+	{
+		PlayerController->CreateRestartWidget();
+	}
 }
 
 void AMyPlayer::Damage_Implementation()
