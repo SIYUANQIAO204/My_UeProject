@@ -7,6 +7,7 @@
 #include "MyPlayerController.generated.h"
 
 class UMyRestartWidget;
+class UMyHealthWidget;
 /**
  * 
  */
@@ -24,8 +25,19 @@ public:
 	
 	void DestroyRestartWidget();
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UMyHealthWidget> HealthWidgetClass;
+
+	void UpdateHealthWidget(float HealthPercent);
+
+protected:
+	virtual void BeginPlay() override;
+
 private:
 
 	UPROPERTY()
 	TObjectPtr<UMyRestartWidget> RestartWidget;
+
+	UPROPERTY()
+	TObjectPtr<UMyHealthWidget> HealthWidget;
 };

@@ -3,6 +3,7 @@
 
 #include "MyCPP/MyPlayerController.h"
 #include "HUD/MyRestartWidget.h"
+#include "HUD/MyHealthWidget.h"
 
 void AMyPlayerController::OnPossess(APawn* InPawn)
 {
@@ -35,4 +36,24 @@ void AMyPlayerController::DestroyRestartWidget()
 	SetPause(false);
 	SetInputMode(FInputModeGameOnly());
 	bShowMouseCursor = false;
+}
+
+void AMyPlayerController::UpdateHealthWidget(float HealthPercent)
+{
+	if (HealthWidgetClass != nullptr)
+	{
+		HealthWidget->UpdateHealthBar(HealthPercent);
+	}
+}
+
+void AMyPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+	if (HealthWidgetClass != nullptr)
+	{
+		HealthWidget = CreateWidget<UMyHealthWidget>(this, HealthWidgetClass);
+		HealthWidget->AddToViewport();
+		
+	}
+
 }

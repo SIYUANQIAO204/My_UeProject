@@ -55,6 +55,11 @@ void AMyPlayer::BeginPlay()
 
 		}
 	}
+	AMyPlayerController* PlayerController = Cast<AMyPlayerController>(GetController());
+	if (PlayerController != nullptr)
+	{
+		PlayerController->UpdateHealthWidget(HealthComponent->GetHealthPercentage());
+	}
 }
 
 void AMyPlayer::Move(const FInputActionValue& value)
@@ -114,5 +119,10 @@ void AMyPlayer::Death_Implementation()
 void AMyPlayer::Damage_Implementation()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player has taken damage!"));
+	AMyPlayerController* PlayerController = Cast<AMyPlayerController>(GetController());
+	if (PlayerController != nullptr)
+	{
+		PlayerController->UpdateHealthWidget(HealthComponent->GetHealthPercentage());
+	}
 }
 
