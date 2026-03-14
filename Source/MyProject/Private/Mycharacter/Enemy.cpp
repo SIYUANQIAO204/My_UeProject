@@ -8,6 +8,7 @@
 #include "Projectile/BallProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Component/MyShootingComponent.h"
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -16,6 +17,8 @@ AEnemy::AEnemy()
 	SightComponent = CreateDefaultSubobject<USightComponent>(TEXT("SightComponent"));
 	SightComponent->SetupAttachment(RootComponent);
 	GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
+	ShootingComponent = CreateDefaultSubobject<UMyShootingComponent>(TEXT("ShootingComponent"));
+
 }
 
 // Called when the game starts or when spawned
@@ -71,9 +74,9 @@ void AEnemy::InitTargertCharacter()
 	SightComponent->SetTargetActor(TargetCharacter);
 }
 
-void AEnemy::ShootBall()
+/*void AEnemy::ShootBall()
 {
-	if (BallProjectileClass)
+	/*if (BallProjectileClass)
 	{
 		FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 40.0f;
 		FRotator SpawnRotation = GetActorRotation();
@@ -85,7 +88,8 @@ void AEnemy::ShootBall()
 		//SpawnedProjectile->FinishSpawning(SpawnTransform);
 
 	}
-}
+	ShootingComponent->StartShooting();
+}*/
 
 // Called every frame
 void AEnemy::Tick(float DeltaTime)
@@ -100,14 +104,14 @@ void AEnemy::Tick(float DeltaTime)
 			FVector Direction = TargetCharacter->GetActorLocation() - GetActorLocation();
 			Direction.Z = 0; // 如果只想水平旋转
 			FRotator NewRotation = Direction.Rotation();
-			SetActorRotation(FMath::RInterpTo(GetActorRotation(), NewRotation, DeltaTime, 5.f));
-			GetWorldTimerManager().SetTimer(ShootTimerHandle, this, &AEnemy::ShootBall, FireDelay, true, ShootInterval);
+			SetActorRotation(FMath::RInterpTo(GetActorRotation(), NewRotation, 0.5f, 1.f));
+			GetWorldTimerManager().SetTimer(ShootTimerHandle, ShootingComponent.Get(), &UMyShootingComponent::StartShooting, ShootInterval, false);
 
 		}
 		else
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Enemy lost sight of the player!"));
-			GetWorldTimerManager().ClearTimer(ShootTimerHandle);
+			ShootingComponent->StopShooting();
 		}
 	}
 }

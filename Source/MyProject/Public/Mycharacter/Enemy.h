@@ -8,6 +8,7 @@
 
 class USightComponent;
 class ABallProjectile;
+class UMyShootingComponent;
 
 UCLASS()
 class MYPROJECT_API AEnemy : public ACharacter
@@ -26,23 +27,28 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<ABallProjectile> BallProjectileClass;
+	//UPROPERTY(EditAnywhere)
+	//TSubclassOf<ABallProjectile> BallProjectileClass;
 
-	void ShootBall();
+	//void ShootBall();
 
 	bool bCanSeePlayer = false;
 	bool bPreviousCanSeePlayer = false;
 
 	FTimerHandle ShootTimerHandle;
 
+	UPROPERTY(EditAnywhere)
 	float ShootInterval = 3.0f;
+
 	float FireDelay = 0.5f;
 
 	void InitTargertCharacter();
 
 	UPROPERTY (EditAnywhere)
 	TObjectPtr<USightComponent> SightComponent;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UMyShootingComponent> ShootingComponent;
 
 public:	
 	// Called every frame

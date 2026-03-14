@@ -9,8 +9,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Component/HealthComponent.h"
+#include "Component/MyShootingComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "MyCpp/MyPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMyPlayer::AMyPlayer()
@@ -38,6 +40,8 @@ AMyPlayer::AMyPlayer()
 	GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HP"));
+
+	ShootingComponent = CreateDefaultSubobject<UMyShootingComponent>(TEXT("ShootingComponent"));
 
 }
 
@@ -102,6 +106,8 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	{
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyPlayer::Look);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyPlayer::Move);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, ShootingComponent.Get(), &UMyShootingComponent::StartShooting);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, ShootingComponent.Get(), &UMyShootingComponent::StopShooting);
 	}
 }
 

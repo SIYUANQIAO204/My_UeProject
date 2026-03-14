@@ -12,6 +12,7 @@ class USpringArmComponent;
 class UInputMappingContext;
 class UInputAction;
 class UHealthComponent;
+class UMyShootingComponent;
 struct FInputActionValue;
 
 UCLASS()
@@ -58,5 +59,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> LookAction;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> ShootAction;
+
+	UPROPERTY(EditAnywhere, Category = "Shooting")
+	TObjectPtr<UMyShootingComponent> ShootingComponent;
 	
 };
