@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/Services/BTService_BlackboardBase.h"
-#include "BTS_DetectionPlayer.generated.h"
+#include "BTS_UpdateSplinePoint.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MYPROJECT_API UBTS_DetectionPlayer : public UBTService_BlackboardBase
+class MYPROJECT_API UBTS_UpdateSplinePoint : public UBTService_BlackboardBase
 {
 	GENERATED_BODY()
+	
 public:
-	UBTS_DetectionPlayer();
+	UBTS_UpdateSplinePoint();
 
 protected:
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
-	
 };

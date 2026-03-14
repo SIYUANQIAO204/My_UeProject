@@ -13,5 +13,13 @@ UCLASS()
 class MYPROJECT_API UBTTN_Patrol : public UBTTaskNode
 {
 	GENERATED_BODY()
+public:
+	UBTTN_Patrol();
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+private:
+	UPROPERTY(EditAnywhere, Category = "Config")
+	float PatrolRadius = 100.0f;
 	
 };

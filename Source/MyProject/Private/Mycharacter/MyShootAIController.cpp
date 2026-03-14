@@ -4,6 +4,7 @@
 #include "Mycharacter/MyShootAIController.h"
 #include "BehaviorTree/BehaviorTree.h"
 
+
 AMyShootAIController::AMyShootAIController()
 {
 }
@@ -15,4 +16,12 @@ void AMyShootAIController::BeginPlay()
 	{
 		RunBehaviorTree(BehaviorTreeAsset);
 	}
+}
+
+void AMyShootAIController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	SetControlRotation(InPawn->GetActorRotation());
+	bAttchtToPawn = true;
 }

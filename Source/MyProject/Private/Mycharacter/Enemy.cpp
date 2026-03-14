@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Component/MyShootingComponent.h"
 #include "Component/MyEnemyPatrolComponent.h"
+
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -20,6 +21,8 @@ AEnemy::AEnemy()
 	GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
 	ShootingComponent = CreateDefaultSubobject<UMyShootingComponent>(TEXT("ShootingComponent"));
 	PatrolComponent = CreateDefaultSubobject<UMyEnemyPatrolComponent>(TEXT("PatrolComponent"));
+
+	
 
 }
 

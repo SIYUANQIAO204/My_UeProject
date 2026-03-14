@@ -19,10 +19,14 @@ class MYPROJECT_API AMyShootAIController : public AAIController
 public:
 	AMyShootAIController();
 
+	void OnPossess(APawn* InPawn) override;
+
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TObjectPtr<UBehaviorTree> BehaviorTreeAsset;
 
+private:
+	bool bAttchtToPawn = false;
 };
