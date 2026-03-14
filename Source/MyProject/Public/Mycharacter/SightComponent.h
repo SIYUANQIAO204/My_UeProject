@@ -27,6 +27,8 @@ protected:
 	TObjectPtr<AActor> TargetActor;
 	bool bIsTargetInSight = false;
 
+	bool bPreviousIsTargetInSight = false;
+
 	float SightRange = 1000.0f;
 
 	float SightAngle = 90.0f;
@@ -39,5 +41,8 @@ public:
 
 	FORCEINLINE bool IsTargetInSight() const { return bIsTargetInSight; }
 
+	FORCEINLINE bool WasTargetInSight() const { return bPreviousIsTargetInSight; }
+
+	FORCEINLINE bool IsTargetJustSeen() const { return bIsTargetInSight && !bPreviousIsTargetInSight; }
 		
 };

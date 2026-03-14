@@ -47,8 +47,7 @@ protected:
 	UPROPERTY (EditAnywhere)
 	TObjectPtr<USightComponent> SightComponent;
 
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UMyShootingComponent> ShootingComponent;
+	
 
 public:	
 	// Called every frame
@@ -56,6 +55,10 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UMyShootingComponent> ShootingComponent;
+
 private:
 	TObjectPtr<ACharacter> TargetCharacter;
 
