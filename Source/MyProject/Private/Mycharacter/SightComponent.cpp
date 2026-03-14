@@ -73,7 +73,7 @@ bool USightComponent::CanSeeTarget(FVector Start, FVector End, TArray<const AAct
 void USightComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	bPreviousIsTargetInSight = bIsTargetInSight;
 	bIsTargetInSight = LinTrace();
 	FVector Start = GetComponentLocation();
 	FVector Forward = GetComponentRotation().Vector();

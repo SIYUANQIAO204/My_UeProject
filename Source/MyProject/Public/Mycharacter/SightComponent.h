@@ -41,7 +41,7 @@ public:
 
 	FORCEINLINE bool IsTargetInSight() const { return bIsTargetInSight; }
 
-	FORCEINLINE bool WasTargetInSight() const { return bPreviousIsTargetInSight; }
+	FORCEINLINE bool WasTargetInSight() const { return bPreviousIsTargetInSight && !bIsTargetInSight; }
 
 	FORCEINLINE bool IsTargetJustSeen() const { return bIsTargetInSight && !bPreviousIsTargetInSight; }
 		

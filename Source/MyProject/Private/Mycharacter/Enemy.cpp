@@ -9,6 +9,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Component/MyShootingComponent.h"
+#include "Component/MyEnemyPatrolComponent.h"
 // Sets default values
 AEnemy::AEnemy()
 {
@@ -18,6 +19,7 @@ AEnemy::AEnemy()
 	SightComponent->SetupAttachment(RootComponent);
 	GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
 	ShootingComponent = CreateDefaultSubobject<UMyShootingComponent>(TEXT("ShootingComponent"));
+	PatrolComponent = CreateDefaultSubobject<UMyEnemyPatrolComponent>(TEXT("PatrolComponent"));
 
 }
 
@@ -97,9 +99,9 @@ void AEnemy::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	bPreviousCanSeePlayer = bCanSeePlayer;
 	bCanSeePlayer = SightComponent->IsTargetInSight();
-	if (bCanSeePlayer != bPreviousCanSeePlayer)
+	if (SightComponent->IsTargetJustSeen() || SightComponent->WasTargetInSight())
 	{
-		if (bCanSeePlayer)
+		if (SightComponent->IsTargetJustSeen())
 		{
 			FVector Direction = TargetCharacter->GetActorLocation() - GetActorLocation();
 			Direction.Z = 0; // 如果只想水平旋转

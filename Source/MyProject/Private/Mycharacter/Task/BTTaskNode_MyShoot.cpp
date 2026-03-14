@@ -10,6 +10,7 @@
 UBTTaskNode_MyShoot::UBTTaskNode_MyShoot()
 {
 	NodeName = TEXT("MyShoot");
+	bNotifyTick = true;
 }
 
 EBTNodeResult::Type UBTTaskNode_MyShoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -35,17 +36,24 @@ void UBTTaskNode_MyShoot::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		AEnemy* MyPawn = Cast<AEnemy>(MyController->GetCharacter());
 		if (MyPawn)
 		{
-			if (!MyPawn->ShootingComponent)
-			{
-				FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-				return;
-			}
-			else
-			{
-				return;
-			}
+			return;
 		}
 	}
 	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	return;
+}
+
+
+EBTNodeResult::Type UBTTaskNode_MyShoot::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	AMyShootAIController* MyController = Cast<AMyShootAIController>(OwnerComp.GetAIOwner());
+	if (MyController)
+	{
+		AEnemy* MyPawn = Cast<AEnemy>(MyController->GetCharacter());
+		if (MyPawn)
+		{
+			MyPawn->ShootingComponent->StopShooting();
+		}
+	}
+	return EBTNodeResult::Aborted;
 }

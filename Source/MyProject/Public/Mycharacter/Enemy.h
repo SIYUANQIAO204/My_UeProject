@@ -9,6 +9,7 @@
 class USightComponent;
 class ABallProjectile;
 class UMyShootingComponent;
+class UMyEnemyPatrolComponent;
 
 UCLASS()
 class MYPROJECT_API AEnemy : public ACharacter
@@ -44,9 +45,6 @@ protected:
 
 	void InitTargertCharacter();
 
-	UPROPERTY (EditAnywhere)
-	TObjectPtr<USightComponent> SightComponent;
-
 	
 
 public:	
@@ -58,6 +56,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UMyShootingComponent> ShootingComponent;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USightComponent> SightComponent;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UMyEnemyPatrolComponent> PatrolComponent;
 
 private:
 	TObjectPtr<ACharacter> TargetCharacter;
