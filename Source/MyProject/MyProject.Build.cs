@@ -22,7 +22,8 @@ public class MyProject : ModuleRules
 			"HeadMountedDisplay",
 			"UMG",
             "SlateCore",
-			"Slate"
+			"Slate",
+			"GameplayTasks"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

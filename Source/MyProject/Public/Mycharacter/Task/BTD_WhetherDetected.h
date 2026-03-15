@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class MYPROJECT_API UBTD_WhetherDetected : public UBTDecorator_BlackboardBase
 {
 	GENERATED_BODY()

@@ -28,6 +28,10 @@ void UBTS_UpdateSplinePoint::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* 
 		return;
 	if (!Enemy->PatrolComponent)
 		return;
-	FVector SplinePointLocation = Enemy->PatrolComponent->GetNextPatrolPoint();
-	OwnerComp.GetBlackboardComponent()->SetValueAsVector(GetSelectedBlackboardKey(), SplinePointLocation);
+	//FVector SplinePointLocation = Enemy->PatrolComponent->GetNextPatrolPoint();
+	//UE_LOG(LogTemp, Warning, TEXT("Updating Spline Point: %s"), *SplinePointLocation.ToString());
+	//OwnerComp.GetBlackboardComponent()->SetValueAsVector(GetSelectedBlackboardKey(), SplinePointLocation);
+	FVector CurrentTarget = Enemy->PatrolComponent->GetCurrentPatrolLocation();
+
+	OwnerComp.GetBlackboardComponent()->SetValueAsVector(GetSelectedBlackboardKey(), CurrentTarget);
 }

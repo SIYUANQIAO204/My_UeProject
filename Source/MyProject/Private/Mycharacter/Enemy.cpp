@@ -100,9 +100,9 @@ void AEnemy::InitTargertCharacter()
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	bPreviousCanSeePlayer = bCanSeePlayer;
-	bCanSeePlayer = SightComponent->IsTargetInSight();
-	if (SightComponent->IsTargetJustSeen() || SightComponent->WasTargetInSight())
+	//bPreviousCanSeePlayer = bCanSeePlayer;
+	//bCanSeePlayer = SightComponent->IsTargetInSight();
+	/*if (SightComponent->IsTargetJustSeen() || SightComponent->WasTargetInSight())
 	{
 		if (SightComponent->IsTargetJustSeen())
 		{
@@ -118,7 +118,7 @@ void AEnemy::Tick(float DeltaTime)
 			UE_LOG(LogTemp, Warning, TEXT("Enemy lost sight of the player!"));
 			ShootingComponent->StopShooting();
 		}
-	}
+	}*/
 }
 
 // Called to bind functionality to input

@@ -22,6 +22,7 @@ void UBTS_DetectionPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* No
 		if (MyPawn)
 		{
 			bool bCanSeePlayer = MyPawn->SightComponent->IsTargetInSight();
+			//UE_LOG(LogTemp, Warning, TEXT("CanSeePlayer: %s"), bCanSeePlayer ? TEXT("True") : TEXT("False"));
 			MyController->GetBlackboardComponent()->SetValueAsBool(TEXT("CanSeePlayer"), bCanSeePlayer);
 			MyController->GetBlackboardComponent()->SetValueAsBool(TEXT("JustSeenPlayer"), MyPawn->SightComponent->IsTargetJustSeen());
 			MyController->GetBlackboardComponent()->SetValueAsBool(TEXT("WasInSight"), MyPawn->SightComponent->WasTargetInSight());

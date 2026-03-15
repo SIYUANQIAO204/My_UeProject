@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class MYPROJECT_API UBTS_UpdateSplinePoint : public UBTService_BlackboardBase
 {
 	GENERATED_BODY()

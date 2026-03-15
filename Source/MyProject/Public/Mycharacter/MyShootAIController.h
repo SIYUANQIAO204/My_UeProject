@@ -21,6 +21,8 @@ public:
 
 	void OnPossess(APawn* InPawn) override;
 
+	void Tick(float DeltaSeconds) override;
+
 protected:
 	virtual void BeginPlay() override;
 

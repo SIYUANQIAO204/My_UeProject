@@ -33,8 +33,8 @@ protected:
 
 	//void ShootBall();
 
-	bool bCanSeePlayer = false;
-	bool bPreviousCanSeePlayer = false;
+	//bool bCanSeePlayer = false;
+	//bool bPreviousCanSeePlayer = false;
 
 	FTimerHandle ShootTimerHandle;
 
@@ -62,6 +62,8 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UMyEnemyPatrolComponent> PatrolComponent;
+
+
 
 private:
 	TObjectPtr<ACharacter> TargetCharacter;

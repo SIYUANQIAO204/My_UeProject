@@ -15,6 +15,7 @@ UBTTaskNode_MyShoot::UBTTaskNode_MyShoot()
 
 EBTNodeResult::Type UBTTaskNode_MyShoot::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Execute Shoot Task"));
 	AMyShootAIController* MyController = Cast<AMyShootAIController>(OwnerComp.GetAIOwner());
 	if (MyController)
 	{
