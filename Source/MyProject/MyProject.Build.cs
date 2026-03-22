@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
+using System.IO;
 
 public class MyProject : ModuleRules
 {
@@ -27,6 +28,18 @@ public class MyProject : ModuleRules
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
+		string ThirdPartyPath = Path.Combine(ModuleDirectory,"../../ThirdParty");
+		string LuaPath = Path.Combine(ThirdPartyPath,"lua");
+		PublicIncludePaths.Add(Path.Combine(LuaPath, "include"));
+
+        // 链接静态库
+        if (Target.Platform == UnrealTargetPlatform.Win64)
+        {
+            PublicAdditionalLibraries.Add(
+                Path.Combine(LuaPath, "lib", "Win64", "LuaBuild.lib")
+            );
+        }
+
 
 		PublicIncludePaths.AddRange(new string[] {
 			"MyProject",
