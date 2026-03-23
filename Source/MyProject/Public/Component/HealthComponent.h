@@ -23,6 +23,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float Health = 100.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float MaxHealth = 100.f;
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -31,6 +34,8 @@ public:
 
 	FORCEINLINE float GetHealth() const { return Health; }
 
-	FORCEINLINE float GetHealthPercentage() const { return Health / 100.f; }
+	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
+
+	FORCEINLINE float GetHealthPercentage() const { return Health / MaxHealth; }
 		
 };

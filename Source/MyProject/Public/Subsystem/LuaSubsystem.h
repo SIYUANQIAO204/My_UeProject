@@ -6,7 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "LuaSubsystem.generated.h"
 
-class lua_State;
+struct lua_State;
 /**
  * 
  */
@@ -22,6 +22,8 @@ public:
 	bool DoFile(const FString& FilePath);
 	bool CallFunction(const FString& FunctionName, const TArray<FString>& Args);
 
+	void RegisterFunctions();
+
 private:
-	TObjectPtr<lua_State> LuaState;
+	lua_State* LuaState;
 };
