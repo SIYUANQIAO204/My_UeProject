@@ -128,3 +128,16 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+ETeam AEnemy::GetTeam_Implementation() const
+{
+	return ETeam();
+}
+
+void AEnemy::Death_Implementation()
+{
+}
+
+void AEnemy::Damage_Implementation(float DamageAmount)
+{
+}
+

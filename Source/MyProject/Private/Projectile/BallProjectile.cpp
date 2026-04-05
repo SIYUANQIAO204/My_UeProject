@@ -73,14 +73,16 @@ ABallProjectile::ABallProjectile()
 	// 碰撞组件
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 	SphereComponent->InitSphereRadius(25.f);
-
 	SetRootComponent(SphereComponent);
 
 	// 碰撞设置
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SphereComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	SphereComponent->SetCollisionObjectType(ECC_GameTraceChannel1);
 	SphereComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-
+	SphereComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel5, ECR_Overlap);
+	SphereComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel6, ECR_Overlap);
+	SphereComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	// 绑定Overlap事件
 	SphereComponent->OnComponentBeginOverlap.AddDynamic(
 		this,
@@ -95,8 +97,10 @@ ABallProjectile::ABallProjectile()
 
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 	ProjectileMovementComponent->bShouldBounce = false;
-
+	ProjectileMovementComponent->bInitialVelocityInLocalSpace = true;
+	ProjectileMovementComponent->bForceSubStepping = true;
 	ProjectileMovementComponent->UpdatedComponent = SphereComponent;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void ABallProjectile::BeginPlay()
@@ -111,6 +115,22 @@ void ABallProjectile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ABallProjectile::InitBullet(AActor* NewOwner, ETeam NewTeam)
+{
+	SetOwner(NewOwner);
+	SetTeam(NewTeam);
+}
+
+void ABallProjectile::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Ball Projectile EndPlay: %s"), *GetName());
+}
+
+void ABallProjectile::Destroyed()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Ball Projectile Destroyed: %s"), *GetName());
+}
+
 void ABallProjectile::OnOverlapBegin(
 	UPrimitiveComponent* OverlappedComp,
 	AActor* OtherActor,
@@ -119,21 +139,39 @@ void ABallProjectile::OnOverlapBegin(
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
+	
+
 	if (!OtherActor) return;
 
-	// 检测是否是玩家
-	AMyPlayer* Player = Cast<AMyPlayer>(OtherActor);
+	if (OverlappedComp->GetCollisionObjectType() == ECC_WorldStatic) {
+		UE_LOG(LogTemp, Warning, TEXT("Ball hit the wall!"));
+		Destroy();
+		return;
+	}
 
-	if (Player)
+	ETeam OtherTeam = ETeam::Neutral;
+
+	if (OtherActor->Implements<UTeamInterface>())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Player Hit!"));
+		OtherTeam = ITeamInterface::Execute_GetTeam(OtherActor);
+	}
 
-		// 调用玩家受伤函数
-		// Player->TakeDamage(...);
-		UHealthComponent* HealthComp = Player->FindComponentByClass<UHealthComponent>();
-		if(HealthComp)
+	if (Team == OtherTeam)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Ball hit a friendly actor!"));
+		return;
+	}
+	else {
+		if (OtherActor->Implements<UHealthInterface>())
 		{
-			HealthComp->TakeDamage(Damage);
+			IHealthInterface::Execute_Damage(OtherActor, Damage);
+			UE_LOG(LogTemp, Warning, TEXT("Ball hit an actor!"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Ball hit an actor without health!"));
+			Destroy();
+			return;
 		}
 		Destroy();
 	}

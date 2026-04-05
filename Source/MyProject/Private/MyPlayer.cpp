@@ -13,6 +13,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "MyCpp/MyPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "Subsystem/LuaSubsystem.h"
 
 // Sets default values
 AMyPlayer::AMyPlayer()
@@ -42,6 +43,8 @@ AMyPlayer::AMyPlayer()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HP"));
 
 	ShootingComponent = CreateDefaultSubobject<UMyShootingComponent>(TEXT("ShootingComponent"));
+
+
 
 }
 
@@ -122,9 +125,13 @@ void AMyPlayer::Death_Implementation()
 	}
 }
 
-void AMyPlayer::Damage_Implementation()
+void AMyPlayer::Damage_Implementation(float DamageAmount)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player has taken damage!"));
+	if(HealthComponent)
+	{
+		HealthComponent->TakeDamage(DamageAmount);
+	}
 	AMyPlayerController* PlayerController = Cast<AMyPlayerController>(GetController());
 	if (PlayerController != nullptr)
 	{
@@ -132,3 +139,21 @@ void AMyPlayer::Damage_Implementation()
 	}
 }
 
+ETeam AMyPlayer::GetTeam_Implementation() const
+{
+	return Team;
+}
+
+void AMyPlayer::CallLua()
+{
+	/*if (UGameInstance* GameInstance = GetGameInstance())
+	{
+		ULuaSubsystem* LuaSubsystem = GameInstance->GetSubsystem<ULuaSubsystem>();
+		if(LuaSubsystem)
+		{
+			LuaSubsystem->DoFile(TEXT("Main.lua"));
+			LuaSubsystem->CallFunction(TEXT("Main"),{});
+
+		}
+	}*/
+}

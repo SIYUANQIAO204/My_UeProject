@@ -24,10 +24,10 @@ class MYPROJECT_API IHealthInterface
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Health")
 	void Death();
-	virtual void Death_Implementation() = 0;
+	virtual void Death_Implementation();
 	//damage
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Health")
-	void Damage();
-	virtual void Damage_Implementation() = 0;
+	void Damage(float DamageAmount);
+	virtual void Damage_Implementation(float DamageAmount);
 
 };

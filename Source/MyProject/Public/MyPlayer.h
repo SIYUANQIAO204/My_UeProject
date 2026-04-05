@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "enum/TeamTypes.h"
 #include "../Interface/HealthInterface.h"
+#include "Interface/TeamInterface.h"
 #include "MyPlayer.generated.h"
 
 class UCameraComponent;
@@ -13,10 +15,11 @@ class UInputMappingContext;
 class UInputAction;
 class UHealthComponent;
 class UMyShootingComponent;
+class ULuaSubsystem;
 struct FInputActionValue;
 
 UCLASS()
-class MYPROJECT_API AMyPlayer : public ACharacter, public IHealthInterface
+class MYPROJECT_API AMyPlayer : public ACharacter, public IHealthInterface, public ITeamInterface
 {
 	GENERATED_BODY()
 
@@ -26,7 +29,8 @@ public:
 
 	// 通过 IHealthInterface 继承
 	void Death_Implementation() override;
-	void Damage_Implementation() override;
+	void Damage_Implementation(float DamageAmount) override;
+	ETeam GetTeam_Implementation() const override;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -37,6 +41,8 @@ protected:
 	void Move(const FInputActionValue& value);
 
 	void Look(const FInputActionValue& value);
+
+	void CallLua();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -65,4 +71,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Shooting")
 	TObjectPtr<UMyShootingComponent> ShootingComponent;
 	
+	UPROPERTY()
+	TObjectPtr<ULuaSubsystem> LuaSubsystem;
+
+	UPROPERTY(EditAnywhere, Category = "Team")
+	ETeam Team = ETeam::Player;
+
 };

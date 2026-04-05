@@ -3,6 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "../../Interface/HealthInterface.h"
+#include "Interface/TeamInterface.h"
+#include "enum/TeamTypes.h"
 #include "GameFramework/Character.h"
 #include "Enemy.generated.h"
 
@@ -10,9 +13,10 @@ class USightComponent;
 class ABallProjectile;
 class UMyShootingComponent;
 class UMyEnemyPatrolComponent;
+class UHealthComponent;
 
 UCLASS()
-class MYPROJECT_API AEnemy : public ACharacter
+class MYPROJECT_API AEnemy : public ACharacter, public IHealthInterface, public ITeamInterface
 {
 	GENERATED_BODY()
 
@@ -63,6 +67,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UMyEnemyPatrolComponent> PatrolComponent;
 
+	ETeam GetTeam_Implementation() const override;
+
+	void Death_Implementation() override;
+
+	void Damage_Implementation(float DamageAmount) override;
 
 
 private:
