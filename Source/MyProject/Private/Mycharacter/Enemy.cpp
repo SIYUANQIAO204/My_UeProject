@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Component/MyShootingComponent.h"
 #include "Component/MyEnemyPatrolComponent.h"
+#include "Component/HealthComponent.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -21,7 +22,7 @@ AEnemy::AEnemy()
 	GetCapsuleComponent()->SetCollisionObjectType(ECC_GameTraceChannel2);
 	ShootingComponent = CreateDefaultSubobject<UMyShootingComponent>(TEXT("ShootingComponent"));
 	PatrolComponent = CreateDefaultSubobject<UMyEnemyPatrolComponent>(TEXT("PatrolComponent"));
-
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 	
 
 }
@@ -62,9 +63,15 @@ ETeam AEnemy::GetTeam_Implementation() const
 
 void AEnemy::Death_Implementation()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Enemy Death"));
+	Destroy();
+	return;
 }
 
 void AEnemy::Damage_Implementation(float DamageAmount)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Enemy Damage: %f"), DamageAmount);
+	HealthComponent->TakeDamage(DamageAmount);
+	return;
 }
 

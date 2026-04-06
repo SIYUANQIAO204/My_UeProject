@@ -66,6 +66,9 @@ public:
 	TObjectPtr<USightComponent> SightComponent;
 
 	UPROPERTY(EditAnywhere)
+	TObjectPtr<UHealthComponent> HealthComponent;
+
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<UMyEnemyPatrolComponent> PatrolComponent;
 
 	ETeam GetTeam_Implementation() const override;

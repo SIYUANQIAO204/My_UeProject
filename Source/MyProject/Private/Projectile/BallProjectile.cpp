@@ -14,15 +14,6 @@ ABallProjectile::ABallProjectile()
 	SphereComponent->InitSphereRadius(25.f);
 	SetRootComponent(SphereComponent);
 
-	// 碰撞设置
-	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	SphereComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
-	SphereComponent->SetCollisionObjectType(ECC_GameTraceChannel1);
-	SphereComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	SphereComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel5, ECR_Overlap);
-	SphereComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel6, ECR_Overlap);
-	SphereComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
-	SphereComponent->SetCollisionResponseToChannel(ECC_EngineTraceChannel6, ECR_Overlap);
 	// 绑定Overlap事件
 	SphereComponent->OnComponentBeginOverlap.AddDynamic(
 		this,
@@ -83,8 +74,9 @@ void ABallProjectile::OnOverlapBegin(
 
 	if (!OtherActor) return;
 
-	if (OverlappedComp->GetCollisionObjectType() == ECC_WorldStatic) {
-		UE_LOG(LogTemp, Warning, TEXT("Ball hit the wall!"));
+	if (!OtherActor->Implements<UTeamInterface>())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Ball hit an actor without team!"));
 		Destroy();
 		return;
 	}
