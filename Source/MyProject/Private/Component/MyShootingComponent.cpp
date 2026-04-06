@@ -3,7 +3,7 @@
 
 #include "Component/MyShootingComponent.h"
 #include "Projectile/BallProjectile.h"
-
+#include "Interface/TeamInterface.h"
 
 // Sets default values for this component's properties
 UMyShootingComponent::UMyShootingComponent()
@@ -35,10 +35,21 @@ void UMyShootingComponent::ShootBall()
 		FRotator SpawnRotation = GetOwner()->GetActorRotation();
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = GetOwner();
-		GetWorld()->SpawnActor<ABallProjectile>(BallProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
-		//FTransform SpawnTransform(SpawnRotation, SpawnLocation);
-		//ABallProjectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<ABallProjectile>(BallProjectileClass, SpawnTransform, this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
-		//SpawnedProjectile->FinishSpawning(SpawnTransform);
+		//GetWorld()->SpawnActor<ABallProjectile>(BallProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+		FTransform SpawnTransform(SpawnRotation, SpawnLocation);
+		ABallProjectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<ABallProjectile>(BallProjectileClass, SpawnTransform, GetOwner(), nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
+		if (!SpawnedProjectile)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to spawn projectile in MyShootingComponent!"));
+			return;
+		}
+		if (!GetOwner() || !GetOwner()->Implements<UTeamInterface>())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Owner does not implement ITeamInterface in MyShootingComponent!"));
+			return;
+		}
+		SpawnedProjectile->InitBullet(GetOwner(), ITeamInterface::Execute_GetTeam(GetOwner()));
+		SpawnedProjectile->FinishSpawning(SpawnTransform);
 
 	}
 	else

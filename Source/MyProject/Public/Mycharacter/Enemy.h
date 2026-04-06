@@ -49,7 +49,8 @@ protected:
 
 	void InitTargertCharacter();
 
-	
+	UPROPERTY(EditAnywhere, Category = "Team")
+	ETeam Team = ETeam::Enemy;
 
 public:	
 	// Called every frame
