@@ -4,6 +4,7 @@
 #include "HUD/MyHUD.h"
 #include "HUD/MyHealthWidget.h"
 #include "HUD/HealthWaringWidget.h"
+#include "HUD/AimWidget.h"
 
 void AMyOwnHUD::CreateHealthWidget()
 {
@@ -24,6 +25,36 @@ void AMyOwnHUD::UpdateHealthWidget(float HealthPercent)
 	if (WidgetInstance != nullptr)
 	{
 		WidgetInstance->UpdateHealthBar(HealthPercent);
+	}
+}
+
+void AMyOwnHUD::ShowAimWidget()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (AimWidgetClass != nullptr)
+	{
+		if (AimWidgetInstance == nullptr)
+		{
+			AimWidgetInstance = CreateWidget<UAimWidget>(PlayerController, AimWidgetClass);
+			if (AimWidgetInstance != nullptr)
+			{
+				AimWidgetInstance->AddToViewport();
+			}
+		}
+		else
+		{
+			AimWidgetInstance->SetVisibility(ESlateVisibility::Visible);
+		}
+		
+	}
+}
+
+void AMyOwnHUD::HideAimWidget()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();	
+	if (AimWidgetClass != nullptr && AimWidgetInstance != nullptr)
+	{
+		AimWidgetInstance->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
@@ -56,3 +87,4 @@ void AMyOwnHUD::HideHealthWarning()
 		HealthWarningWidgetInstance->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
+

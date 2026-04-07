@@ -8,6 +8,7 @@
 
 class UMyHealthWidget;
 class UHealthWaringWidget;
+class UAimWidget;
 
 /**
  * 
@@ -24,8 +25,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UHealthWaringWidget> HealthWaringWidgetClass;
 
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UAimWidget> AimWidgetClass;
+
 	UPROPERTY()
 	TObjectPtr<UMyHealthWidget> WidgetInstance;
+
+	UPROPERTY()
+	TObjectPtr<UAimWidget> AimWidgetInstance;
 
 	UPROPERTY()
 	TObjectPtr<UHealthWaringWidget> HealthWarningWidgetInstance;
@@ -33,6 +40,10 @@ public:
 	void CreateHealthWidget();
 
 	void UpdateHealthWidget(float HealthPercent);
+
+	void ShowAimWidget();
+
+	void HideAimWidget();
 
 	UFUNCTION(BlueprintCallable)
 	void ShowHealthWarning();
