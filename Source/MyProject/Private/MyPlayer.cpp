@@ -14,6 +14,8 @@
 #include "MyCpp/MyPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Subsystem/LuaSubsystem.h"
+#include "AimComponent.h"
+#include "Components/ArrowComponent.h"
 
 // Sets default values
 AMyPlayer::AMyPlayer()
@@ -44,7 +46,9 @@ AMyPlayer::AMyPlayer()
 
 	ShootingComponent = CreateDefaultSubobject<UMyShootingComponent>(TEXT("ShootingComponent"));
 
+	AimComponent = CreateDefaultSubobject<UAimComponent>(TEXT("AimComponent"));
 
+	MuzzleLocation = CreateDefaultSubobject<UArrowComponent>(TEXT("MuzzleLocation"));
 
 }
 
@@ -93,6 +97,22 @@ void AMyPlayer::Look(const FInputActionValue& value)
 	}
 }
 
+void AMyPlayer::OnAimPressed()
+{
+	AMyPlayerController* PlayerController = Cast<AMyPlayerController>(GetController());
+	if (!PlayerController) return;
+	PlayerController->SetAiming(true);
+	
+}
+
+void AMyPlayer::OnAimReleased()
+{
+	AMyPlayerController* PlayerController = Cast<AMyPlayerController>(GetController());
+	if (!PlayerController) return;
+	PlayerController->SetAiming(false);
+
+}
+
 // Called every frame
 void AMyPlayer::Tick(float DeltaTime)
 {
@@ -111,6 +131,8 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyPlayer::Move);
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, ShootingComponent.Get(), &UMyShootingComponent::StartShooting);
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, ShootingComponent.Get(), &UMyShootingComponent::StopShooting);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &AMyPlayer::OnAimPressed);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AMyPlayer::OnAimReleased);
 	}
 }
 

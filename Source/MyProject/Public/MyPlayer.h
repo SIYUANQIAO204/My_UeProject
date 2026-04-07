@@ -15,7 +15,9 @@ class UInputMappingContext;
 class UInputAction;
 class UHealthComponent;
 class UMyShootingComponent;
+class UAimComponent;
 class ULuaSubsystem;
+class UArrowComponent;
 struct FInputActionValue;
 
 UCLASS()
@@ -42,6 +44,10 @@ protected:
 
 	void Look(const FInputActionValue& value);
 
+	void OnAimPressed();
+
+	void OnAimReleased();
+
 	void CallLua();
 public:	
 	// Called every frame
@@ -67,6 +73,15 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	TObjectPtr<UInputAction> ShootAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	TObjectPtr<UInputAction> AimAction;
+
+	UPROPERTY(EditAnywhere, Category = "Aim")
+	TObjectPtr<UAimComponent> AimComponent;
+
+	UPROPERTY(EditAnywhere, Category = "Shooting")
+	TObjectPtr<UArrowComponent> MuzzleLocation;
 
 	UPROPERTY(EditAnywhere, Category = "Shooting")
 	TObjectPtr<UMyShootingComponent> ShootingComponent;

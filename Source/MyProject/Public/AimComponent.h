@@ -31,6 +31,6 @@ public:
 
 	FORCEINLINE bool IsAiming() const { return bIsAiming; }
 
-	FORCEINLINE void SetIsAiming(bool bNewIsAiming) { bIsAiming = bNewIsAiming; }
+	void SetIsAiming(bool bNewIsAiming);
 		
 };

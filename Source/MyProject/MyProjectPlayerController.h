@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "MyProjectPlayerController.generated.h"
 
+
 class UInputMappingContext;
 class UUserWidget;
 
@@ -48,5 +49,8 @@ protected:
 
 	/** Returns true if the player should use UMG touch controls */
 	bool ShouldUseTouchControls() const;
+
+public:
+	void SetAiming(bool bIsAiming);
 
 };

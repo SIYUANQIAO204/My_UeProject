@@ -63,4 +63,20 @@ void AMyPlayerController::UpdateHealthWidget(float HealthPercent)
 	}
 }
 
+void AMyPlayerController::SetAiming(bool bIsAiming)
+{
+	AMyOwnHUD* HUD = Cast<AMyOwnHUD>(GetHUD());
+	if (!HUD)
+	{
+		return;
+	}
 
+	if (bIsAiming)
+	{
+		HUD->ShowAimWidget();
+	}
+	else
+	{
+		HUD->HideAimWidget();
+	}
+}

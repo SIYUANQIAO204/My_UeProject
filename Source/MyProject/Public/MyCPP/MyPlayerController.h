@@ -31,6 +31,8 @@ public:
 
 	void UpdateHealthWidget(float HealthPercent);
 
+	void SetAiming(bool bIsAiming);
+
 protected:
 	virtual void BeginPlay() override;
 

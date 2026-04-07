@@ -11,6 +11,7 @@ UAimComponent::UAimComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bStartWithTickEnabled = false; // 默认不启用 Tick，只有在瞄准时才启用
 
 	// ...
 }
@@ -83,5 +84,18 @@ bool UAimComponent::GetAimDirection(FVector MuzzleLocation, FVector& AimDirectio
     AimDirection = (TargetPoint - MuzzleLocation).GetSafeNormal();
 
     return true;
+}
+
+void UAimComponent::SetIsAiming(bool bNewIsAiming)
+{
+	bIsAiming = bNewIsAiming;
+    if (bIsAiming)
+    {
+		SetComponentTickEnabled(true); // 启用 Tick
+    }
+    else
+	{
+		SetComponentTickEnabled(false); // 禁用 Tick
+    }
 }
 

@@ -8,6 +8,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MyProject.h"
 #include "Widgets/Input/SVirtualJoystick.h"
+#include "HUD/MyHUD.h"
 
 void AMyProjectPlayerController::BeginPlay()
 {
@@ -64,4 +65,24 @@ bool AMyProjectPlayerController::ShouldUseTouchControls() const
 {
 	// are we on a mobile platform? Should we force touch?
 	return SVirtualJoystick::ShouldDisplayTouchInterface() || bForceTouchControls;
+}
+
+void AMyProjectPlayerController::SetAiming(bool bIsAiming)
+{
+	UE_LOG(LogMyProject, Warning, TEXT("SetAiming called with bIsAiming = %s"), bIsAiming ? TEXT("true") : TEXT("false"));
+	AMyOwnHUD* HUD = Cast<AMyOwnHUD>(GetHUD());
+	if(!HUD)
+	{
+		UE_LOG(LogMyProject, Warning, TEXT("PlayerController could not cast HUD to MyOwnHUD"));
+		return;
+	}
+
+	if(bIsAiming)
+	{
+		HUD->ShowAimWidget();
+	}
+	else
+	{
+		HUD->HideAimWidget();
+	}
 }
