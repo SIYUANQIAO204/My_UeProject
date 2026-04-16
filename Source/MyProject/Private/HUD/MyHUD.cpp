@@ -43,7 +43,7 @@ void AMyOwnHUD::ShowAimWidget()
 		}
 		else
 		{
-			AimWidgetInstance->SetVisibility(ESlateVisibility::Visible);
+			AimWidgetInstance->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		}
 		
 	}

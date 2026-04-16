@@ -4,6 +4,7 @@
 #include "Component/MyShootingComponent.h"
 #include "Projectile/BallProjectile.h"
 #include "Interface/TeamInterface.h"
+#include "MyPlayer.h"
 
 // Sets default values for this component's properties
 UMyShootingComponent::UMyShootingComponent()
@@ -31,7 +32,13 @@ void UMyShootingComponent::ShootBall()
 	
 	if (BallProjectileClass)
 	{
-		FVector SpawnLocation = GetOwner()-> GetActorLocation() + GetOwner()->GetActorForwardVector() * 40.0f;
+		FVector SpawnLocation = GetOwner()->GetActorLocation()+GetOwner()->GetActorForwardVector() * 40.0f;
+		AMyPlayer* PlayerOwner = Cast<AMyPlayer>(GetOwner());
+		if(PlayerOwner)
+		{
+			SpawnLocation = PlayerOwner->GetAimDirection();
+		}
+		UE_LOG(LogTemp, Warning, TEXT("SpawnLocation: %s"), *SpawnLocation.ToString());
 		FRotator SpawnRotation = GetOwner()->GetActorRotation();
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = GetOwner();
@@ -49,6 +56,7 @@ void UMyShootingComponent::ShootBall()
 			return;
 		}
 		SpawnedProjectile->InitBullet(GetOwner(), ITeamInterface::Execute_GetTeam(GetOwner()));
+		
 		SpawnedProjectile->FinishSpawning(SpawnTransform);
 
 	}

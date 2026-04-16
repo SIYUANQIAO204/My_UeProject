@@ -54,12 +54,10 @@ void ABallProjectile::InitBullet(AActor* NewOwner, ETeam NewTeam)
 
 void ABallProjectile::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Ball Projectile EndPlay: %s"), *GetName());
 }
 
 void ABallProjectile::Destroyed()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Ball Projectile Destroyed: %s"), *GetName());
 }
 
 void ABallProjectile::OnOverlapBegin(
@@ -76,7 +74,6 @@ void ABallProjectile::OnOverlapBegin(
 
 	if (!OtherActor->Implements<UTeamInterface>())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Ball hit an actor without team!"));
 		Destroy();
 		return;
 	}
@@ -90,18 +87,15 @@ void ABallProjectile::OnOverlapBegin(
 
 	if (Team == OtherTeam)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Ball hit a friendly actor!"));
 		return;
 	}
 	else {
 		if (OtherActor->Implements<UHealthInterface>())
 		{
 			IHealthInterface::Execute_Damage(OtherActor, Damage);
-			UE_LOG(LogTemp, Warning, TEXT("Ball hit an actor!"));
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Ball hit an actor without health!"));
 			Destroy();
 			return;
 		}

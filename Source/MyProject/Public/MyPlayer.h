@@ -55,6 +55,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	FORCEINLINE FVector GetAimDirection() const { return AimDirection; }
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USpringArmComponent> CameraBoom;
@@ -91,5 +93,8 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Team")
 	ETeam Team = ETeam::Player;
+
+	UPROPERTY()
+	FVector AimDirection;
 
 };

@@ -7,7 +7,7 @@
 #include "MyShootingComponent.generated.h"
 
 class ABallProjectile;
-
+class USceneComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MYPROJECT_API UMyShootingComponent : public UActorComponent
@@ -31,7 +31,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void ShootBall();
-
 	
 
 public:	

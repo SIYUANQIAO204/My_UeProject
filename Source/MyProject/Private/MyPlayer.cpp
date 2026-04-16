@@ -55,6 +55,7 @@ AMyPlayer::AMyPlayer()
 // Called when the game starts or when spawned
 void AMyPlayer::BeginPlay()
 {
+	AimDirection = MuzzleLocation->GetComponentLocation() + MuzzleLocation->GetForwardVector() * 40.0f;
 	Super::BeginPlay();
 
 	if (const ULocalPlayer* Player = (GEngine && GetWorld()) ? GEngine->GetFirstGamePlayer(GetWorld()) : nullptr) 
@@ -102,7 +103,7 @@ void AMyPlayer::OnAimPressed()
 	AMyPlayerController* PlayerController = Cast<AMyPlayerController>(GetController());
 	if (!PlayerController) return;
 	PlayerController->SetAiming(true);
-	
+	AimComponent->SetIsAiming(true);
 }
 
 void AMyPlayer::OnAimReleased()
@@ -110,14 +111,28 @@ void AMyPlayer::OnAimReleased()
 	AMyPlayerController* PlayerController = Cast<AMyPlayerController>(GetController());
 	if (!PlayerController) return;
 	PlayerController->SetAiming(false);
-
+	AimComponent->SetIsAiming(false);
 }
 
 // Called every frame
 void AMyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if(AimComponent->IsAiming())
+	{
+		if (MuzzleLocation)
+		{
+			AimComponent->GetAimDirection(GetActorLocation(), AimDirection);
+		}
+		else
+		{
+			AimComponent->GetAimDirection(GetActorLocation(), AimDirection);
+		}
+	}
+	else
+	{
+		AimDirection = GetActorLocation() + MuzzleLocation->GetForwardVector() * 40.0f ;
+	}
 }
 
 // Called to bind functionality to input
