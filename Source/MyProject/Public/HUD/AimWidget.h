@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable, BlueprintType)
 class MYPROJECT_API UAimWidget : public UUserWidget
 {
 	GENERATED_BODY()

@@ -68,4 +68,6 @@ public:
 
 	void Destroyed() override;
 
+	void InitVelocity(FVector Direction);
+
 };

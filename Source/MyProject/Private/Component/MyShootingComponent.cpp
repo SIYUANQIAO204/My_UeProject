@@ -33,17 +33,23 @@ void UMyShootingComponent::ShootBall()
 	if (BallProjectileClass)
 	{
 		FVector SpawnLocation = GetOwner()->GetActorLocation()+GetOwner()->GetActorForwardVector() * 40.0f;
+		FVector ShootDirection = GetOwner()->GetActorForwardVector();
 		AMyPlayer* PlayerOwner = Cast<AMyPlayer>(GetOwner());
-		if(PlayerOwner)
-		{
-			SpawnLocation = PlayerOwner->GetAimDirection();
-		}
-		UE_LOG(LogTemp, Warning, TEXT("SpawnLocation: %s"), *SpawnLocation.ToString());
-		FRotator SpawnRotation = GetOwner()->GetActorRotation();
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = GetOwner();
-		//GetWorld()->SpawnActor<ABallProjectile>(BallProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+		if (PlayerOwner)
+		{
+			SpawnLocation = PlayerOwner->GetMuzzleLocation();
+			ShootDirection = PlayerOwner->GetMuzzleForwardVector();
+			if (PlayerOwner->GetIsAiming())
+			{
+				ShootDirection = PlayerOwner->GetAimDirection();
+			}
+		}
+		ShootDirection = ShootDirection.GetSafeNormal();
+		FRotator SpawnRotation = ShootDirection.Rotation();
 		FTransform SpawnTransform(SpawnRotation, SpawnLocation);
+		SpawnParams.Owner = GetOwner();
 		ABallProjectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<ABallProjectile>(BallProjectileClass, SpawnTransform, GetOwner(), nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
 		if (!SpawnedProjectile)
 		{
@@ -56,7 +62,8 @@ void UMyShootingComponent::ShootBall()
 			return;
 		}
 		SpawnedProjectile->InitBullet(GetOwner(), ITeamInterface::Execute_GetTeam(GetOwner()));
-		
+		SpawnedProjectile->InitVelocity(ShootDirection);
+		UE_LOG(LogTemp, Warning, TEXT("Shooting ball from %s with direction %s"), *SpawnLocation.ToString(), *ShootDirection.ToString());
 		SpawnedProjectile->FinishSpawning(SpawnTransform);
 
 	}

@@ -49,15 +49,16 @@ AMyPlayer::AMyPlayer()
 	AimComponent = CreateDefaultSubobject<UAimComponent>(TEXT("AimComponent"));
 
 	MuzzleLocation = CreateDefaultSubobject<UArrowComponent>(TEXT("MuzzleLocation"));
-
+	MuzzleLocation->SetupAttachment(GetMesh()); // Attach to the character's mesh at the "MuzzleSocket" socket
+	MuzzleLocation->SetRelativeLocation(FVector(40.0f, 0.0f, 60.0f)); // Adjust as needed to position the muzzle correctly
+	MuzzleLocation->SetRelativeRotation(FRotator::ZeroRotator); // Adjust as needed to orient the muzzle correctly
 }
 
 // Called when the game starts or when spawned
 void AMyPlayer::BeginPlay()
 {
-	AimDirection = MuzzleLocation->GetComponentLocation() + MuzzleLocation->GetForwardVector() * 40.0f;
 	Super::BeginPlay();
-
+	AimDirection = GetMuzzleForwardVector();
 	if (const ULocalPlayer* Player = (GEngine && GetWorld()) ? GEngine->GetFirstGamePlayer(GetWorld()) : nullptr) 
 	{
 		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Player);
@@ -103,7 +104,20 @@ void AMyPlayer::OnAimPressed()
 	AMyPlayerController* PlayerController = Cast<AMyPlayerController>(GetController());
 	if (!PlayerController) return;
 	PlayerController->SetAiming(true);
+	bIsAiming = true;
 	AimComponent->SetIsAiming(true);
+
+	// 保存原始设置
+	OriginalCameraBoomLocation = CameraBoom->GetRelativeLocation();
+	OriginalCameraBoomLength = CameraBoom->TargetArmLength;
+
+	// 切换到越肩视角
+	CameraBoom->SetRelativeLocation(AimOffset);
+	CameraBoom->TargetArmLength = AimCameraBoomLength;
+	CameraBoom->bEnableCameraLag = false; // 禁用相机延迟以获得精确控制
+
+	// 禁用controller对camera旋转的影响（瞄准时camera不随控制器旋转）
+	FollowCamera->bUsePawnControlRotation = false;
 }
 
 void AMyPlayer::OnAimReleased()
@@ -111,27 +125,25 @@ void AMyPlayer::OnAimReleased()
 	AMyPlayerController* PlayerController = Cast<AMyPlayerController>(GetController());
 	if (!PlayerController) return;
 	PlayerController->SetAiming(false);
+	bIsAiming = false;
 	AimComponent->SetIsAiming(false);
+
+	// 恢复原始设置
+	CameraBoom->SetRelativeLocation(OriginalCameraBoomLocation);
+	CameraBoom->TargetArmLength = OriginalCameraBoomLength;
+	CameraBoom->bEnableCameraLag = true; // 恢复相机延迟
+
+	// 恢复controller对camera旋转的影响
+	FollowCamera->bUsePawnControlRotation = true;
 }
 
 // Called every frame
 void AMyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if(AimComponent->IsAiming())
+	if (bIsAiming) 
 	{
-		if (MuzzleLocation)
-		{
-			AimComponent->GetAimDirection(GetActorLocation(), AimDirection);
-		}
-		else
-		{
-			AimComponent->GetAimDirection(GetActorLocation(), AimDirection);
-		}
-	}
-	else
-	{
-		AimDirection = GetActorLocation() + MuzzleLocation->GetForwardVector() * 40.0f ;
+		AimDirection = AimComponent->GetAimDirection(MuzzleLocation->GetComponentLocation(), AimDirection) ? AimDirection : (MuzzleLocation->GetComponentLocation() + MuzzleLocation->GetForwardVector() * 40.0f);
 	}
 }
 
@@ -150,6 +162,18 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AMyPlayer::OnAimReleased);
 	}
 }
+
+FVector AMyPlayer::GetMuzzleLocation() const
+{
+	return MuzzleLocation ? MuzzleLocation->GetComponentLocation() : GetActorLocation();
+}
+
+FVector AMyPlayer::GetMuzzleForwardVector() const
+{
+	return MuzzleLocation ? MuzzleLocation->GetForwardVector() : GetActorForwardVector();
+}
+
+
 
 void AMyPlayer::Death_Implementation()
 {

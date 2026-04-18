@@ -33,6 +33,7 @@ public:
 	void Death_Implementation() override;
 	void Damage_Implementation(float DamageAmount) override;
 	ETeam GetTeam_Implementation() const override;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -56,7 +57,14 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	FORCEINLINE bool GetIsAiming() const { return bIsAiming; }
+
 	FORCEINLINE FVector GetAimDirection() const { return AimDirection; }
+
+	FVector GetMuzzleLocation() const;
+
+	FVector GetMuzzleForwardVector() const;
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USpringArmComponent> CameraBoom;
@@ -82,7 +90,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Aim")
 	TObjectPtr<UAimComponent> AimComponent;
 
-	UPROPERTY(EditAnywhere, Category = "Shooting")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Shooting", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UArrowComponent> MuzzleLocation;
 
 	UPROPERTY(EditAnywhere, Category = "Shooting")
@@ -95,6 +103,19 @@ private:
 	ETeam Team = ETeam::Player;
 
 	UPROPERTY()
+	bool bIsAiming = false;
+
+	UPROPERTY()
 	FVector AimDirection;
+
+	UPROPERTY(EditAnywhere, Category = "Aim",meta = (AllowPrivateAccess = "true"))
+	FVector AimOffset = FVector(0.0f, 50.0f, 30.0f);
+
+	UPROPERTY(EditAnywhere, Category = "Aim", meta = (AllowPrivateAccess = "true"))
+	float AimCameraBoomLength = 150.0f;
+
+	FVector OriginalCameraBoomLocation;
+	float OriginalCameraBoomLength = 300.0f;
+
 
 };

@@ -23,12 +23,13 @@ ABallProjectile::ABallProjectile()
 	// Projectile Movement
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 
+	ProjectileMovementComponent->bInitialVelocityInLocalSpace = false;
+
 	ProjectileMovementComponent->InitialSpeed = 2300.f;
 	ProjectileMovementComponent->MaxSpeed = 2300.f;
 
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 	ProjectileMovementComponent->bShouldBounce = false;
-	ProjectileMovementComponent->bInitialVelocityInLocalSpace = true;
 	ProjectileMovementComponent->bForceSubStepping = true;
 	ProjectileMovementComponent->UpdatedComponent = SphereComponent;
 	PrimaryActorTick.bCanEverTick = true;
@@ -58,6 +59,15 @@ void ABallProjectile::EndPlay(EEndPlayReason::Type EndPlayReason)
 
 void ABallProjectile::Destroyed()
 {
+}
+
+void ABallProjectile::InitVelocity(FVector Direction)
+{
+	if (ProjectileMovementComponent)
+	{
+		const FVector SafeDirection = Direction.GetSafeNormal();
+		ProjectileMovementComponent->Velocity = SafeDirection * ProjectileMovementComponent->InitialSpeed;
+	}
 }
 
 void ABallProjectile::OnOverlapBegin(
@@ -101,4 +111,6 @@ void ABallProjectile::OnOverlapBegin(
 		}
 		Destroy();
 	}
+
+
 }
