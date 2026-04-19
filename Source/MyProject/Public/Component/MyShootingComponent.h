@@ -8,6 +8,7 @@
 
 class ABallProjectile;
 class USceneComponent;
+class UCameraShakeBase;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MYPROJECT_API UMyShootingComponent : public UActorComponent
@@ -32,6 +33,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ShootBall();
 	
+	FVector ApplySpreadToDirection(const FVector& Direction,bool bIsAiming) const;
+
+	void PlayShotCameraShake(bool bIsAiming) const;
 
 public:	
 	// Called every frame
@@ -41,5 +45,48 @@ public:
 	float FireDelay = 0.5f;
 
 	FTimerHandle ShootTimerHandle;
-		
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Recoil")
+	float HipFireSpreadAngle = 2.5f;
+
+	UPROPERTY(EditAnywhere, Category = "Recoil")
+	float AimSpreadAngle = 0.8f;
+
+	UPROPERTY(EditAnywhere, Category = "Recoil")
+	float SpreadIncreasePerShot = 0.5f;
+
+	UPROPERTY(EditAnywhere, Category = "Recoil")
+	float MaxSpreadAngle = 10.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Recoil")
+	float SpreadRecoveryRate = 7.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Recoil")
+	float CurrentSpreadAngle = 0.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Recoil")
+	TSubclassOf<UCameraShakeBase> ShotCameraShakeClass;
+
+	UPROPERTY(EditAnywhere, Category = "Recoil")
+	float ShotCameraShakeScale = 1.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Recoil")
+	float CameraShakeScaleAim = 0.25f;
+
+	UPROPERTY(EditAnywhere, Category = "Recoil")
+	float VerticalKickPerShot = 0.35f; // 每发上抬角度
+
+	UPROPERTY(EditAnywhere, Category = "Recoil")
+	float MaxVerticalKick = 4.0f; // 最大上抬上限
+
+	UPROPERTY(EditAnywhere, Category = "Recoil")
+	float HorizontalJitter = 4.0f; // 水平随机抖动
+
+	UPROPERTY(EditAnywhere, Category = "Recoil")
+	float VerticalRecoverSpeed = 8.0f; // 松开后恢复速度
+
+	UPROPERTY(VisibleAnywhere, Category = "Recoil")
+	float CurrentVerticalKick = 0.0f;
+
 };

@@ -143,7 +143,10 @@ void AMyPlayer::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	if (bIsAiming) 
 	{
-		AimDirection = AimComponent->GetAimDirection(MuzzleLocation->GetComponentLocation(), AimDirection) ? AimDirection : (MuzzleLocation->GetComponentLocation() + MuzzleLocation->GetForwardVector() * 40.0f);
+		AimDirection = AimComponent->GetAimDirection(
+			MuzzleLocation->GetComponentLocation(), AimDirection)
+			? AimDirection
+			: MuzzleLocation->GetForwardVector();
 	}
 }
 
