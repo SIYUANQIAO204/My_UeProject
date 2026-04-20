@@ -28,4 +28,7 @@ class MYPROJECT_API UMyAnimInstance : public UAnimInstance
 
 		UPROPERTY(BlueprintReadOnly)
 		float Speed;
+
+		UPROPERTY(BlueprintReadOnly)
+		bool bIsAiming;
 };

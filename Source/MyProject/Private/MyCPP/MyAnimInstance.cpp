@@ -14,6 +14,7 @@ void UMyAnimInstance::NativeInitializeAnimation()
 	if (PlayerCharacter)
 	{
 		PlayerCharacterMovement = PlayerCharacter->GetCharacterMovement();
+		bIsAiming = false;
 	}
 }
 
@@ -23,5 +24,9 @@ void UMyAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (PlayerCharacterMovement)
 	{
 		Speed = UKismetMathLibrary::VSizeXY(PlayerCharacterMovement->Velocity);
+		if (PlayerCharacter)
+		{
+			bIsAiming = PlayerCharacter->GetIsAiming();
+		}
 	}
 }

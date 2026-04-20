@@ -102,7 +102,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Team")
 	ETeam Team = ETeam::Player;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
 	bool bIsAiming = false;
 
 	UPROPERTY()
