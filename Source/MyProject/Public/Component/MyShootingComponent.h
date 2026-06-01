@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ExtraData/BulletData.h"
 #include "MyShootingComponent.generated.h"
 
 class ABallProjectile;
 class USceneComponent;
 class UCameraShakeBase;
+class APooledBullet;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MYPROJECT_API UMyShootingComponent : public UActorComponent
@@ -30,9 +32,17 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABallProjectile> BallProjectileClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Shooting")
+	TSubclassOf<APooledBullet> PooledBulletClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BulletData")
+	TObjectPtr<UBulletData> BulletData;
+
 	UFUNCTION(BlueprintCallable)
 	void ShootBall();
 	
+
+
 	FVector ApplySpreadToDirection(const FVector& Direction,bool bIsAiming) const;
 
 	void PlayShotCameraShake(bool bIsAiming) const;

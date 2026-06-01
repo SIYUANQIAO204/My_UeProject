@@ -5,10 +5,13 @@
 #include "Projectile/BallProjectile.h"
 #include "Interface/TeamInterface.h"
 #include "MyPlayer.h"
+
 #include "GameFramework/Pawn.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "ObjectPool/MyBulletObjectPoolSubSystem.h"
+#include "Projectile/PooledBullet.h"
 #include "Camera/CameraShakeBase.h"
 
 
@@ -18,7 +21,7 @@ UMyShootingComponent::UMyShootingComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
+	
 	// ...
 }
 
@@ -27,17 +30,42 @@ UMyShootingComponent::UMyShootingComponent()
 void UMyShootingComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
+	if (!BulletData)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BulletData is null in MyShootingComponent::BeginPlay"));
+		return;
+	}
+	BulletData->BulletOwner = GetOwner();
+	if (GetOwner() && GetOwner()->Implements<UTeamInterface>())
+	{
+		BulletData->Team = ITeamInterface::Execute_GetTeam(GetOwner());
+	}
 	// ...
-	
+
 }
 
 
 void UMyShootingComponent::ShootBall()
 {
-	
-	if (BallProjectileClass)
+	UE_LOG(LogTemp, Log, TEXT("MyShootingComponent::ShootBall called on %s"), *GetOwner()->GetName());
+	if (!BulletData)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("ShootBall aborted: BulletData is null"));
+		return;
+	}
+	FPoolActorPrama Params;
+	Params.ExtraData = BulletData;
+	UMyBulletObjectPoolSubSystem* Pool = GetWorld()->GetSubsystem<UMyBulletObjectPoolSubSystem>();
+	if (Pool == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Bullet pool subsystem not found in MyShootingComponent!"));
+		return;
+	}
+	UE_LOG(LogTemp, Log, TEXT("MyShootingComponent::ShootBall: Pool found. BallProjectileClass=%s PooledBulletClass=%s"), BallProjectileClass ? *BallProjectileClass->GetName() : TEXT("None"), PooledBulletClass ? *PooledBulletClass->GetName() : TEXT("None"));
+
+	if (PooledBulletClass)
+	{
+
 		FVector SpawnLocation = GetOwner()->GetActorLocation()+GetOwner()->GetActorForwardVector() * 40.0f;
 		FVector ShootDirection = GetOwner()->GetActorForwardVector();
 		AMyPlayer* PlayerOwner = Cast<AMyPlayer>(GetOwner());
@@ -63,17 +91,27 @@ void UMyShootingComponent::ShootBall()
 			}
 		}
 		ShootDirection = ApplySpreadToDirection(ShootDirection, bIsAiming).GetSafeNormal();
-
+		Params.SpawnDirection = ShootDirection;
+		Params.SpawnLocation = SpawnLocation;
 		FRotator SpawnRotation = ShootDirection.Rotation();
+		Params.SpawnRotation = SpawnRotation;
 		FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 		SpawnParams.Owner = GetOwner();
-		ABallProjectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<ABallProjectile>(
+		/*ABallProjectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<ABallProjectile>(
 			BallProjectileClass, 
 			SpawnTransform, 
 			GetOwner(), 
 			nullptr, 
-			ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
-		if (!SpawnedProjectile)
+			ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);*/
+		UE_LOG(LogTemp, Log, TEXT("MyShootingComponent: requesting AcquireBullet. SpawnLocation=%s SpawnDirection=%s"), *SpawnLocation.ToString(), *ShootDirection.ToString());
+		auto SpawnedBullet = Pool->AcquireBullet(PooledBulletClass,Params);
+		UE_LOG(LogTemp, Log, TEXT("MyShootingComponent: AcquireBullet returned %s"), SpawnedBullet ? *SpawnedBullet->GetName() : TEXT("Null"));
+		if (!SpawnedBullet || !Cast<APooledBullet>(SpawnedBullet))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to acquire bullet from pool in MyShootingComponent!"));
+			return;
+		}
+		/*if (!SpawnedProjectile)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Failed to spawn projectile in MyShootingComponent!"));
 			return;
@@ -84,9 +122,9 @@ void UMyShootingComponent::ShootBall()
 			return;
 		}
 		SpawnedProjectile->InitBullet(GetOwner(), ITeamInterface::Execute_GetTeam(GetOwner()));
-		SpawnedProjectile->InitVelocity(ShootDirection);
+		SpawnedProjectile->InitVelocity(ShootDirection);*/
 		//UE_LOG(LogTemp, Warning, TEXT("Shooting ball from %s with direction %s"), *SpawnLocation.ToString(), *ShootDirection.ToString());
-		SpawnedProjectile->FinishSpawning(SpawnTransform);
+		//SpawnedProjectile->FinishSpawning(SpawnTransform);
 
 		CurrentSpreadAngle = FMath::Clamp(CurrentSpreadAngle + SpreadIncreasePerShot, 0.0f, MaxSpreadAngle);
 		CurrentVerticalKick = FMath::Clamp(CurrentVerticalKick + VerticalKickPerShot, 0.0f, MaxVerticalKick);

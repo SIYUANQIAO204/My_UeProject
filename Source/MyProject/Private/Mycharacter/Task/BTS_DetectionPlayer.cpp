@@ -11,6 +11,7 @@ UBTS_DetectionPlayer::UBTS_DetectionPlayer()
 {
 	NodeName = TEXT("DetectionPlayer");
 	Interval = 0.2f;
+	RandomDeviation = 0.05f;
 }
 
 void UBTS_DetectionPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)

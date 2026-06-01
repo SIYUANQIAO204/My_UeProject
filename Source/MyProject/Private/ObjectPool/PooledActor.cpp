@@ -2,7 +2,7 @@
 
 
 #include "ObjectPool/PooledActor.h"
-
+#include "ObjectPool/MyBulletObjectPoolSubSystem.h"
 
 // Sets default values
 APooledActor::APooledActor()
@@ -12,8 +12,10 @@ APooledActor::APooledActor()
 
 }
 
-void APooledActor::OnAcquireFromPool_Implementation()
+void APooledActor::OnAcquireFromPool_Implementation(FPoolActorPrama Params)
 {
+	SetActorLocation(Params.SpawnLocation);
+	SetActorRotation(Params.SpawnRotation);
 	bIsFinished = false;
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(true);
@@ -22,6 +24,7 @@ void APooledActor::OnAcquireFromPool_Implementation()
 
 void APooledActor::OnReleaseToPool_Implementation()
 {
+	SetActorLocation(FVector(0,0,-1000.0));
 	bIsFinished = true;
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
@@ -32,9 +35,9 @@ void APooledActor::PoolTick_Implementation(float DeltaTime)
 {
 }
 
-void APooledActor::SetPool(UMyBulletObjectPool* InPool)
+void APooledActor::SetPool(FBulletPoolUnit* InPool)
 {
-		Pool = InPool;
+	Pool = MakeShared<FBulletPoolUnit>(*InPool);
 }
 
 bool APooledActor::IsFinished_Implementation() const

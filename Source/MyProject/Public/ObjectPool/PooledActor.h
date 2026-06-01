@@ -6,7 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Interface/IPoolable.h"
 #include "PooledActor.generated.h"
-class UMyBulletObjectPool;
+
+struct FBulletPoolUnit;
 
 UCLASS()
 class MYPROJECT_API APooledActor : public AActor, public IIPoolable
@@ -17,7 +18,7 @@ public:
 	// Sets default values for this actor's properties
 	APooledActor();
 
-	void OnAcquireFromPool_Implementation() override;
+	void OnAcquireFromPool_Implementation(FPoolActorPrama Params) override;
 
 	void OnReleaseToPool_Implementation() override;
 
@@ -25,18 +26,21 @@ public:
 
 	void PoolTick_Implementation(float DeltaTime) override;
 
-	void SetPool(UMyBulletObjectPool* InPool);
+	void SetPool(FBulletPoolUnit* InPool);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	TObjectPtr<UMyBulletObjectPool> Pool;
+	TSharedPtr<FBulletPoolUnit> Pool;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pool", Meta = (AllowPrivateAccess = "true"))
+	bool bIsFinished = false;
+
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-private:
-	bool bIsFinished = false;
+	
 };

@@ -6,6 +6,30 @@
 #include "UObject/Interface.h"
 #include "IPoolable.generated.h"
 
+class UDataAsset;
+
+USTRUCT(BlueprintType)
+struct FPoolActorPrama
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawn")
+	FVector SpawnLocation;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawn")
+	FRotator SpawnRotation;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawn")
+	FVector SpawnDirection;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Spawn")
+	FVector InitialVelocity;
+
+	UPROPERTY()
+	TObjectPtr<UDataAsset> ExtraData;
+
+};
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, Blueprintable)
 class UIPoolable : public UInterface
@@ -23,7 +47,7 @@ class IIPoolable
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Poolable")
-	void OnAcquireFromPool();
+	void OnAcquireFromPool(FPoolActorPrama Params);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Poolable")
 	void OnReleaseToPool();
@@ -35,7 +59,7 @@ public:
 	bool IsFinished() const;
 
 protected:
-	virtual void OnAcquireFromPool_Implementation() {}
+	virtual void OnAcquireFromPool_Implementation(FPoolActorPrama Params) {}
 
 	virtual void OnReleaseToPool_Implementation() {}
 
