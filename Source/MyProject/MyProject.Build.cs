@@ -24,7 +24,8 @@ public class MyProject : ModuleRules
 			"UMG",
             "SlateCore",
 			"Slate",
-			"GameplayTasks"
+			"GameplayTasks",
+			"NavigationSystem"
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

@@ -13,6 +13,7 @@ class USightComponent;
 class ABallProjectile;
 class UMyShootingComponent;
 class UMyEnemyPatrolComponent;
+class UMYEnemyMovingComponent;
 class UHealthComponent;
 
 UCLASS()
@@ -70,6 +71,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UMyEnemyPatrolComponent> PatrolComponent;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UMYEnemyMovingComponent> EnemyMovingComponent;
+
+	UFUNCTION()
+	void MoveToTarget(FVector TargetLocation);
 
 	ETeam GetTeam_Implementation() const override;
 

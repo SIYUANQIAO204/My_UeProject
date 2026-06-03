@@ -11,6 +11,7 @@
 #include "Component/MyShootingComponent.h"
 #include "Component/MyEnemyPatrolComponent.h"
 #include "Component/HealthComponent.h"
+#include "Component/MYEnemyMovingComponent.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -23,7 +24,7 @@ AEnemy::AEnemy()
 	ShootingComponent = CreateDefaultSubobject<UMyShootingComponent>(TEXT("ShootingComponent"));
 	PatrolComponent = CreateDefaultSubobject<UMyEnemyPatrolComponent>(TEXT("PatrolComponent"));
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
-	
+	EnemyMovingComponent = CreateDefaultSubobject<UMYEnemyMovingComponent>(TEXT("MYEnemyMovingComponent"));
 
 }
 
@@ -54,6 +55,16 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AEnemy::MoveToTarget(FVector TargetLocation)
+{
+	if (!EnemyMovingComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyMovingComponent is null"));
+		return;
+	}
+	EnemyMovingComponent->SetTargetLocation(TargetLocation);
 }
 
 ETeam AEnemy::GetTeam_Implementation() const

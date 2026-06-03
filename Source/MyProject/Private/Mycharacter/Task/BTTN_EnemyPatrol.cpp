@@ -6,6 +6,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Component/MyEnemyPatrolComponent.h"
+#include "Component/MYEnemyMovingComponent.h"
 #include "Mycharacter/Enemy.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "AITypes.h"
@@ -29,7 +30,7 @@ EBTNodeResult::Type UBTTN_EnemyPatrol::ExecuteTask(UBehaviorTreeComponent& Owner
 			if (BlackboardComp)
 			{
 				FVector PatrolPoint = BlackboardComp->GetValueAsVector("PatrolPoint");
-				FAIMoveRequest MoveRequest(PatrolPoint);
+				/*FAIMoveRequest MoveRequest(PatrolPoint);
 				MoveRequest.SetAcceptanceRadius(AcceptanceRadius);
 				MoveRequest.SetUsePathfinding(true);
 				MoveRequest.SetCanStrafe(true);
@@ -40,8 +41,13 @@ EBTNodeResult::Type UBTTN_EnemyPatrol::ExecuteTask(UBehaviorTreeComponent& Owner
 					UE_LOG(LogTemp, Warning, TEXT("Failed to move to Patrol Point"));
 					return EBTNodeResult::Failed;
 
+				}*/
+				AEnemy* Enemy = Cast<AEnemy>(AIController->GetPawn());
+				if (Enemy)
+				{
+					Enemy->MoveToTarget(PatrolPoint);
 				}
-					return EBTNodeResult::InProgress;
+				return EBTNodeResult::InProgress;
 			}
 		}
 	}
@@ -54,7 +60,7 @@ void UBTTN_EnemyPatrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	AMyShootAIController* AIController = Cast<AMyShootAIController>(OwnerComp.GetAIOwner());
 	if (AIController)
 	{
-		EPathFollowingStatus::Type MoveStatus = AIController->GetMoveStatus();
+		/*EPathFollowingStatus::Type MoveStatus = AIController->GetMoveStatus();
 		
 		if (MoveStatus == EPathFollowingStatus::Idle)
 		{
@@ -64,6 +70,20 @@ void UBTTN_EnemyPatrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 				Enemy->PatrolComponent->MoveToNextPatrolPoint();
 			}
 			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		}*/
+
+		AEnemy* Enemy = Cast<AEnemy>(AIController->GetPawn());
+		if (Enemy)
+		{
+			UMYEnemyMovingComponent* MovingComponent = Enemy->FindComponentByClass<UMYEnemyMovingComponent>();
+			if (MovingComponent)
+			{
+				if (!MovingComponent->IsMoving())
+				{
+					Enemy->PatrolComponent->MoveToNextPatrolPoint();
+					FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+				}
+			}
 		}
 	}
 }

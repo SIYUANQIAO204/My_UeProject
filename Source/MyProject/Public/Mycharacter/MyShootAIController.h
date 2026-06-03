@@ -23,6 +23,18 @@ public:
 
 	void Tick(float DeltaSeconds) override;
 
+	UFUNCTION()
+	void StartPatrolSpline();
+
+	UFUNCTION()
+	void StopPatrolSpline();
+
+	UFUNCTION()
+	void StartShooting();
+
+	UFUNCTION()
+	void StopShooting();
+
 protected:
 	virtual void BeginPlay() override;
 

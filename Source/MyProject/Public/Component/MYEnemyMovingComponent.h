@@ -33,25 +33,49 @@ public:
 	UFUNCTION()
 	void TickMove(float DeltaTime);
 
+	UFUNCTION()
+	void TickRotate(float DeltaTime);
+
+	UFUNCTION()
+	void SwitchPathPoint();
+
+	UFUNCTION()
+	FORCEINLINE bool IsMoving() const { return bIsMoving; }
+
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Movement")
+	UPROPERTY(VisibleAnywhere, Category = "Owner", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<AActor> Owner;
+
+	UPROPERTY(VisibleAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	bool bIsMoving = false;
+
+	UPROPERTY(VisibleAnywhere, Category = "Movement", meta = (AllowPrivateAccess="true"))
 	FVector TargetLocation;
 
-	UPROPERTY(VisibleAnywhere, Category = "Movement")
+	UPROPERTY(VisibleAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	int PathIndex;
+
+	UPROPERTY(VisibleAnywhere, Category = "Movement", meta = (AllowPrivateAccess="true"))	
+	TArray<FVector> PathPoints;
+
+	UPROPERTY(VisibleAnywhere, Category = "Movement", meta = (AllowPrivateAccess="true"))
 	FVector Velocity;
 
-	UPROPERTY(VisibleAnywhere, Category = "Movement")
+	UPROPERTY(VisibleAnywhere, Category = "Movement", meta = (AllowPrivateAccess="true"))
 	FVector Location;
 
-	UPROPERTY(EditAnywhere, Category = "Speed")
+	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess="true"))
 	float MaxSpeed = 300.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Acceleration")
+	UPROPERTY(EditAnywhere, Category = "Acceleration", meta = (AllowPrivateAccess="true"))
 	float MaxAcceleration = 50.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Movement")
+	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess="true"))
 	float ArriveRadius = 50.0f;
 
-	UPROPERTY(EditAnywhere, Category = "Movement")
+	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess="true"))
 	float SlowRadius = 200.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Rotation", meta = (AllowPrivateAccess="true"))
+	float MaxRotationSpeed = 180.0f;
 };

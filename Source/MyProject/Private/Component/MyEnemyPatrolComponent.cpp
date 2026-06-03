@@ -31,7 +31,7 @@ void UMyEnemyPatrolComponent::BeginPlay()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("RouteActor is not set for %s"), *GetOwner()->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("RouteActor is not set for %s"), *GetOwner()->GetName());
 	}
 	// ...
 	
@@ -41,7 +41,7 @@ FVector UMyEnemyPatrolComponent::GetNextPatrolPoint()
 {
 	if(!RouteActor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("RouteActor is not set for %s"), *GetOwner()->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("RouteActor is not set for %s"), *GetOwner()->GetName());
 		return FVector::ZeroVector;
 	}
 
@@ -75,14 +75,14 @@ void UMyEnemyPatrolComponent::MoveToNextPatrolPoint()
 {
 	if (!RouteActor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("RouteActor is not set for %s"), *GetOwner()->GetName());
+		//UE_LOG(LogTemp, Warning, TEXT("RouteActor is not set for %s"), *GetOwner()->GetName());
 		return;
 	}
 
 	if (SplineComponent)
 	{
 		CurrentRouteIndex = (CurrentRouteIndex + 1) % SplineComponent->GetNumberOfSplinePoints();
-		UE_LOG(LogTemp, Warning, TEXT("%s moving to next patrol point: %s"), *GetOwner()->GetName(), *GetCurrentPatrolLocation().ToString());
+		//UE_LOG(LogTemp, Warning, TEXT("%s moving to next patrol point: %s"), *GetOwner()->GetName(), *GetCurrentPatrolLocation().ToString());
 	}
 	return;
 }
