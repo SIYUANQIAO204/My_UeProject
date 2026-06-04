@@ -7,6 +7,8 @@
 #include "MyShootAIController.generated.h"
 
 class UBehaviorTree;
+class UEnvQuery;
+class UBlackBoardData;
 
 /**
  * 
@@ -40,6 +42,13 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "AI")
 	TObjectPtr<UBehaviorTree> BehaviorTreeAsset;
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	TObjectPtr<UEnvQuery> CombatLocationQuery;
+
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	TObjectPtr<UBlackboardData> BlackboardComponent;
 
 private:
 	bool bAttchtToPawn = false;

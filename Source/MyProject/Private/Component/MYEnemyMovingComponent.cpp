@@ -80,7 +80,7 @@ void UMYEnemyMovingComponent::SetTargetLocation(const FVector& NewTargetLocation
 void UMYEnemyMovingComponent::StopMove()
 {
 	bIsMoving = false;
-	Velocity = FVector::ZeroVector;
+
 }
 
 void UMYEnemyMovingComponent::TickMove(float DeltaTime)

@@ -3,6 +3,8 @@
 
 #include "Mycharacter/SightComponent.h"
 #include "DrawDebugHelpers.h"
+#include "NavigationSystem.h"
+
 // Sets default values for this component's properties
 USightComponent::USightComponent()
 {
@@ -66,6 +68,22 @@ bool USightComponent::CanSeeTarget(FVector Start, FVector End, TArray<const AAct
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red);
 	return !HitResult.bBlockingHit;
 
+}
+
+FVector USightComponent::GetActorLoaction() const
+{
+	if (!TargetActor)
+	{
+		return FVector::ZeroVector;
+	}
+	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
+	FNavLocation NavLocation;
+	bool bFoundLocation = NavSys->ProjectPointToNavigation(TargetActor->GetActorLocation(), NavLocation, FVector(200.f,200.f,500.f));
+	if (bFoundLocation)
+	{
+		return NavLocation.Location;
+	}
+	return FVector::ZeroVector;
 }
 
 

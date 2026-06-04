@@ -24,6 +24,9 @@ protected:
 
 	bool CanSeeTarget(FVector Start, FVector End, TArray<const AActor*> IgnoreActors) const;
 
+	UFUNCTION()
+	FVector GetActorLoaction() const;
+
 	TObjectPtr<AActor> TargetActor;
 	bool bIsTargetInSight = false;
 
