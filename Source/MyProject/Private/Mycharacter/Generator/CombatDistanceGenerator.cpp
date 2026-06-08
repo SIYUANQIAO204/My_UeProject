@@ -2,12 +2,12 @@
 
 
 #include "Mycharacter/Generator/CombatDistanceGenerator.h"
-#include "EnvironmentQuery/Items/EnvQueryItemType_Actor.h"
+#include "EnvironmentQuery/Items/EnvQueryItemType_Point.h"
 #include "NavigationSystem.h"
 
 UCombatDistanceGenerator::UCombatDistanceGenerator()
 {
-	ItemType = UEnvQueryItemType_Actor::StaticClass();
+	ItemType = UEnvQueryItemType_Point::StaticClass();
 }
 
 void UCombatDistanceGenerator::GenerateItems(FEnvQueryInstance& QueryInstance) const
@@ -28,6 +28,7 @@ void UCombatDistanceGenerator::GenerateItems(FEnvQueryInstance& QueryInstance) c
 	float StartAngle = -AngleOffsetValue * 0.5f;
 	float EndAngle = AngleOffsetValue * 0.5f;
 	TArray<FVector> ContextLocations;
+	QueryInstance.PrepareContext(PlayerContext, ContextLocations);
 	FVector PlayerLocation = ContextLocations.Num() > 0 ? ContextLocations[0] : FVector::ZeroVector;
 	TArray<FNavLocation> GeneratedLocations;
 	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(QueryInstance.World);

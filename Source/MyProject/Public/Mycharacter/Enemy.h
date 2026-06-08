@@ -14,6 +14,7 @@ class ABallProjectile;
 class UMyShootingComponent;
 class UMyEnemyPatrolComponent;
 class UMYEnemyMovingComponent;
+class UCombatComponent;
 class UHealthComponent;
 
 UCLASS()
@@ -75,6 +76,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UMYEnemyMovingComponent> EnemyMovingComponent;
 
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UCombatComponent> CombatComponent;
+
 	UFUNCTION()
 	void MoveToTarget(FVector TargetLocation);
 
@@ -86,6 +90,7 @@ public:
 
 
 private:
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<ACharacter> TargetCharacter;
 
 

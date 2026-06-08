@@ -5,7 +5,9 @@
 #include "Mycharacter/MyShootAIController.h"
 #include "GameFramework/Character.h"
 #include "Mycharacter/Enemy.h"
+#include "Component/CombatComponent.h"
 #include "Component/MyShootingComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 UBTTaskNode_MyShoot::UBTTaskNode_MyShoot()
 {
@@ -22,7 +24,9 @@ EBTNodeResult::Type UBTTaskNode_MyShoot::ExecuteTask(UBehaviorTreeComponent& Own
 		AEnemy* MyPawn = Cast<AEnemy>(MyController->GetCharacter());
 		if (MyPawn)
 		{
-			MyPawn->ShootingComponent->StartShooting();
+			//MyPawn->ShootingComponent->StartShooting();
+			TObjectPtr<AActor> Target = Cast<AActor>(MyController->GetBlackboardComponent()->GetValueAsObject("TargetActor"));
+			MyPawn->CombatComponent->InitCombat(Target);
 			return EBTNodeResult::InProgress;
 		}
 	}
@@ -37,7 +41,11 @@ void UBTTaskNode_MyShoot::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 		AEnemy* MyPawn = Cast<AEnemy>(MyController->GetCharacter());
 		if (MyPawn)
 		{
-			return;
+			if(!MyPawn->CombatComponent->IsInCombat())
+			{
+				FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+				return;
+			}
 		}
 	}
 	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
@@ -53,7 +61,8 @@ EBTNodeResult::Type UBTTaskNode_MyShoot::AbortTask(UBehaviorTreeComponent& Owner
 		AEnemy* MyPawn = Cast<AEnemy>(MyController->GetCharacter());
 		if (MyPawn)
 		{
-			MyPawn->ShootingComponent->StopShooting();
+			//MyPawn->ShootingComponent->StopShooting();
+			MyPawn->CombatComponent->ExitCombat();
 		}
 	}
 	return EBTNodeResult::Aborted;

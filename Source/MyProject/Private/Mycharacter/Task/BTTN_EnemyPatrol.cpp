@@ -87,3 +87,21 @@ void UBTTN_EnemyPatrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 		}
 	}
 }
+
+EBTNodeResult::Type UBTTN_EnemyPatrol::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	AMyShootAIController* AIController = Cast<AMyShootAIController>(OwnerComp.GetAIOwner());
+	if (AIController)
+	{
+		AEnemy* Enemy = Cast<AEnemy>(AIController->GetPawn());
+		if (Enemy)
+		{
+			UMYEnemyMovingComponent* MovingComponent = Enemy->FindComponentByClass<UMYEnemyMovingComponent>();
+			if (MovingComponent)
+			{
+				MovingComponent->StopMove();
+			}
+		}
+	}
+	return EBTNodeResult::Type();
+}

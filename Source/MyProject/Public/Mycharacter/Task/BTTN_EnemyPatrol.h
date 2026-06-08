@@ -21,6 +21,8 @@ public:
 
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
+	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Config")
 	float AcceptanceRadius = 200.0f;

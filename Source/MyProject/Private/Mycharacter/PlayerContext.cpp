@@ -25,7 +25,7 @@ void UPlayerContext::ProvideContext(FEnvQueryInstance& QueryInstance, FEnvQueryC
 		return;
 	}
 	UBlackboardComponent* BlackboardComp = MyController->GetBlackboardComponent();
-	AActor* PlayerActor = Cast<AActor>(BlackboardComp->GetValueAsObject(TEXT("PlayerActor")));
+	AActor* PlayerActor = Cast<AActor>(BlackboardComp->GetValueAsObject(TEXT("TargetActor")));
 	if (!PlayerActor)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("UPlayerContext::ProvideContext: PlayerActor is not set in Blackboard"));

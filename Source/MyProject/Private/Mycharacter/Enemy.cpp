@@ -12,6 +12,7 @@
 #include "Component/MyEnemyPatrolComponent.h"
 #include "Component/HealthComponent.h"
 #include "Component/MYEnemyMovingComponent.h"
+#include "Component/CombatComponent.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -25,6 +26,7 @@ AEnemy::AEnemy()
 	PatrolComponent = CreateDefaultSubobject<UMyEnemyPatrolComponent>(TEXT("PatrolComponent"));
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 	EnemyMovingComponent = CreateDefaultSubobject<UMYEnemyMovingComponent>(TEXT("MYEnemyMovingComponent"));
+	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 
 }
 
@@ -41,6 +43,10 @@ void AEnemy::InitTargertCharacter()
 	
 	TargetCharacter = UGameplayStatics::GetPlayerCharacter(this, 0);
 	SightComponent->SetTargetActor(TargetCharacter);
+	if (!SightComponent->GetTargetActor())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Target Actor is null in Enemy"));
+	}
 }
 
 

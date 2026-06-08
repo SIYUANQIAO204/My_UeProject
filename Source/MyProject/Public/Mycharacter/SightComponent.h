@@ -27,7 +27,9 @@ protected:
 	UFUNCTION()
 	FVector GetActorLoaction() const;
 
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<AActor> TargetActor;
+
 	bool bIsTargetInSight = false;
 
 	bool bPreviousIsTargetInSight = false;
@@ -41,6 +43,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	FORCEINLINE void SetTargetActor(AActor* NewTarget) { TargetActor = NewTarget; }
+
+	FORCEINLINE AActor* GetTargetActor() const { return TargetActor; }
 
 	FORCEINLINE bool IsTargetInSight() const { return bIsTargetInSight; }
 

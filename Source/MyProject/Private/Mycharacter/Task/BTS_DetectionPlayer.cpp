@@ -6,6 +6,7 @@
 #include "Mycharacter/Enemy.h"
 #include "Mycharacter/SightComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Component/CombatComponent.h"
 
 UBTS_DetectionPlayer::UBTS_DetectionPlayer()
 {
@@ -20,13 +21,14 @@ void UBTS_DetectionPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* No
 	if (MyController)
 	{
 		AEnemy* MyPawn = Cast<AEnemy>(MyController->GetCharacter());
-		if (MyPawn)
+		if (MyPawn && (!MyPawn->CombatComponent->IsInCombat() || MyPawn->CombatComponent->GetCurrentState() == ECombatState::Shooting))
 		{
 			bool bCanSeePlayer = MyPawn->SightComponent->IsTargetInSight();
 			//UE_LOG(LogTemp, Warning, TEXT("CanSeePlayer: %s"), bCanSeePlayer ? TEXT("True") : TEXT("False"));
 			MyController->GetBlackboardComponent()->SetValueAsBool(TEXT("CanSeePlayer"), bCanSeePlayer);
 			MyController->GetBlackboardComponent()->SetValueAsBool(TEXT("JustSeenPlayer"), MyPawn->SightComponent->IsTargetJustSeen());
 			MyController->GetBlackboardComponent()->SetValueAsBool(TEXT("WasInSight"), MyPawn->SightComponent->WasTargetInSight());
+			MyController->GetBlackboardComponent()->SetValueAsObject(TEXT("TargetActor"), MyPawn->SightComponent->GetTargetActor());
 		}
 	}
 }

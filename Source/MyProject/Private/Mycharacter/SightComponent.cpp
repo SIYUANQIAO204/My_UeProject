@@ -109,6 +109,7 @@ void USightComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 		0,
 		1
 	);
+	
 	// ...
 }
 

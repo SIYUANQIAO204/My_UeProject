@@ -51,7 +51,6 @@ void UMYEnemyMovingComponent::SetTargetLocation(const FVector& NewTargetLocation
 	if (!Owner) return;
 	bIsMoving = true;
 	TargetLocation = NewTargetLocation;
-	UE_LOG(LogTemp, Warning, TEXT("Setting target location: %s"), *NewTargetLocation.ToString());
 	UNavigationPath* Path = UNavigationSystemV1::FindPathToLocationSynchronously(GetWorld(), GetOwner()->GetActorLocation(), TargetLocation);
 	if (!Path)
 	{
@@ -66,7 +65,7 @@ void UMYEnemyMovingComponent::SetTargetLocation(const FVector& NewTargetLocation
 	PathPoints = Path->PathPoints;
 	for (auto Point : PathPoints)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Path Point: %s"), *Point.ToString());
+		//UE_LOG(LogTemp, Log, TEXT("Path Point: %s"), *Point.ToString());
 	}
 	if (PathPoints.Num() == 0)
 	{
@@ -74,13 +73,13 @@ void UMYEnemyMovingComponent::SetTargetLocation(const FVector& NewTargetLocation
 		bIsMoving = false;
 		return;
 	}
-	PathIndex = 0;
+	PathIndex = 1;
 }
 
 void UMYEnemyMovingComponent::StopMove()
 {
 	bIsMoving = false;
-
+	Velocity = FVector::ZeroVector;
 }
 
 void UMYEnemyMovingComponent::TickMove(float DeltaTime)
@@ -91,7 +90,7 @@ void UMYEnemyMovingComponent::TickMove(float DeltaTime)
 		return;
 	}
 	FVector ToTarget = PathPoints[PathIndex] - Location;
-	ToTarget.Z = 0.0f;
+	ToTarget.Z -= 100.0f;
 	FVector DesireDirection = ToTarget.GetSafeNormal();
 	float Distance = ToTarget.Size();
 	if (Distance < ArriveRadius)
@@ -102,7 +101,6 @@ void UMYEnemyMovingComponent::TickMove(float DeltaTime)
 			return;
 		}
 		ToTarget = PathPoints[PathIndex] - Location;
-		ToTarget.Z = 0.0f;
 		DesireDirection = (PathPoints[PathIndex] - Location).GetSafeNormal();
 		Distance = (PathPoints[PathIndex] - Location).Size();
 	}

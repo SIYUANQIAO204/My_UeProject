@@ -27,6 +27,7 @@ void UEnvQueryTest_CombatDistance::RunTest(FEnvQueryInstance& QueryInstance) con
 	TArray<FVector> ContextLocations;
 	QueryInstance.PrepareContext(TargetContext, ContextLocations);
 	FVector TargetLocation = ContextLocations[0];
+	TargetLocation.Z -= 100.f;
 	for (FEnvQueryInstance::ItemIterator It(this, QueryInstance); It; ++It)
 	{
 		FVector ItemLocation = GetItemLocation(QueryInstance, It.GetIndex());

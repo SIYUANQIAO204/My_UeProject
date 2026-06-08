@@ -23,7 +23,7 @@ protected:
 	TSubclassOf<UEnvQueryContext> TargetContext;
 	
 
-	UPROPERTY(EditDefaultsOnly, Category = "TraceChannel")
+	
 	UPROPERTY(EditDefaultsOnly, Category = "TraceChannel")
 	TEnumAsByte<ECollisionChannel> TraceChannel;
 };
