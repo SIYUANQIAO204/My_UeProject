@@ -16,6 +16,7 @@ enum class ECombatState : uint8
 	Moving,
 	Shooting,
 	Reposition,
-	Finished
+	Finished,
+	Aiming
 	
 };

@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "MYEnemyMovingComponent.generated.h"
 
+class UCharacterMovementComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MYPROJECT_API UMYEnemyMovingComponent : public UActorComponent
@@ -42,12 +43,21 @@ public:
 	UFUNCTION()
 	FORCEINLINE bool IsMoving() const { return bIsMoving; }
 
+	UFUNCTION()
+	void SetTargetRotation(const FRotator& NewTargetRotation);
+
+	void TickRotateToTargetRotation(float DeltaTime);
+
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Owner", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<AActor> Owner;
+	UPROPERTY()
+	TObjectPtr<UCharacterMovementComponent> CharacterMovementComponent;
+
 
 	UPROPERTY(VisibleAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	bool bIsMoving = false;
+
+	UPROPERTY(VisibleAnywhere, Category = "Rotator", meta = (AllowPrivateAccess = "true"))
+	bool bIsRotating = false;
 
 	UPROPERTY(VisibleAnywhere, Category = "Movement", meta = (AllowPrivateAccess="true"))
 	FVector TargetLocation;
@@ -61,8 +71,8 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Movement", meta = (AllowPrivateAccess="true"))
 	FVector Velocity;
 
-	UPROPERTY(VisibleAnywhere, Category = "Movement", meta = (AllowPrivateAccess="true"))
-	FVector Location;
+	UPROPERTY(VisibleAnywhere, Category = "Rotate", meta = (AllowPrivateAccess = "true"))
+	FRotator TargetRotation;
 
 	UPROPERTY(EditAnywhere, Category = "Speed", meta = (AllowPrivateAccess="true"))
 	float MaxSpeed = 300.0f;
@@ -77,5 +87,5 @@ private:
 	float SlowRadius = 200.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Rotation", meta = (AllowPrivateAccess="true"))
-	float MaxRotationSpeed = 180.0f;
+	float MaxRotationSpeed = 20.0f;
 };

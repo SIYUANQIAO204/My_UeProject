@@ -2,7 +2,8 @@
 
 
 #include "Component/MYEnemyMovingComponent.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "NavigationSystem.h"
 #include "NavigationPath.h"
 
@@ -21,13 +22,13 @@ UMYEnemyMovingComponent::UMYEnemyMovingComponent()
 void UMYEnemyMovingComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	Owner = GetOwner();
-	if (!Owner)
+	ACharacter* CurrentOwner = Cast<ACharacter>(GetOwner());
+	if (!CurrentOwner)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Owner is null in MYEnemyMovingComponent::BeginPlay"));
+		UE_LOG(LogTemp, Warning, TEXT("Owner is not a Characters in MYEnemyMovingComponent::BeginPlay"));
 		return;
 	}
-	Location = Owner->GetActorLocation();
+	CharacterMovementComponent = CurrentOwner->GetCharacterMovement();
 	// ...
 	
 }
@@ -47,8 +48,7 @@ void UMYEnemyMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 void UMYEnemyMovingComponent::SetTargetLocation(const FVector& NewTargetLocation)
 {
-	
-	if (!Owner) return;
+	if (!GetOwner()) return;
 	bIsMoving = true;
 	TargetLocation = NewTargetLocation;
 	UNavigationPath* Path = UNavigationSystemV1::FindPathToLocationSynchronously(GetWorld(), GetOwner()->GetActorLocation(), TargetLocation);
@@ -65,7 +65,7 @@ void UMYEnemyMovingComponent::SetTargetLocation(const FVector& NewTargetLocation
 	PathPoints = Path->PathPoints;
 	for (auto Point : PathPoints)
 	{
-		//UE_LOG(LogTemp, Log, TEXT("Path Point: %s"), *Point.ToString());
+		UE_LOG(LogTemp, Log, TEXT("Path Point: %s"), *Point.ToString());
 	}
 	if (PathPoints.Num() == 0)
 	{
@@ -78,8 +78,10 @@ void UMYEnemyMovingComponent::SetTargetLocation(const FVector& NewTargetLocation
 
 void UMYEnemyMovingComponent::StopMove()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Stop Move"));
 	bIsMoving = false;
 	Velocity = FVector::ZeroVector;
+	CharacterMovementComponent->StopMovementImmediately();
 }
 
 void UMYEnemyMovingComponent::TickMove(float DeltaTime)
@@ -89,10 +91,12 @@ void UMYEnemyMovingComponent::TickMove(float DeltaTime)
 		UE_LOG(LogTemp, Log, TEXT("No Owner"));
 		return;
 	}
-	FVector ToTarget = PathPoints[PathIndex] - Location;
-	ToTarget.Z -= 100.0f;
+	FVector Target = PathPoints[PathIndex];
+	FVector CurrentLocation = GetOwner()->GetActorLocation();
+	Target.Z = CurrentLocation.Z;
+	FVector ToTarget = Target - GetOwner()->GetActorLocation();
 	FVector DesireDirection = ToTarget.GetSafeNormal();
-	float Distance = ToTarget.Size();
+	float Distance = FVector::Dist2D(GetOwner()->GetActorLocation(), Target);
 	if (Distance < ArriveRadius)
 	{
 		SwitchPathPoint();
@@ -100,9 +104,11 @@ void UMYEnemyMovingComponent::TickMove(float DeltaTime)
 		{
 			return;
 		}
-		ToTarget = PathPoints[PathIndex] - Location;
-		DesireDirection = (PathPoints[PathIndex] - Location).GetSafeNormal();
-		Distance = (PathPoints[PathIndex] - Location).Size();
+		Target = PathPoints[PathIndex];
+		Target.Z = CurrentLocation.Z;
+		ToTarget = Target - GetOwner()->GetActorLocation();
+		DesireDirection = ToTarget.GetSafeNormal();
+		Distance = FVector::Dist2D(GetOwner()->GetActorLocation(), Target);
 	}
 	FVector DesireVelocity = DesireDirection;
 	float DesireSpeed = MaxSpeed;
@@ -119,10 +125,8 @@ void UMYEnemyMovingComponent::TickMove(float DeltaTime)
 	Steering = Steering.GetClampedToMaxSize(MaxAcceleration);
 	Velocity += Steering * DeltaTime;
 	Velocity = Velocity.GetClampedToMaxSize(MaxSpeed);
-	FVector NewLocation = Location + Velocity * DeltaTime;
-	GetOwner()->SetActorLocation(NewLocation);
-	Location = NewLocation;
-	Distance = (PathPoints[PathIndex] - Location).Size();
+	CharacterMovementComponent->MaxWalkSpeed = Velocity.Size();
+	Cast<ACharacter>(GetOwner())->AddMovementInput(DesireDirection, 1.f);
 }
 
 void UMYEnemyMovingComponent::TickRotate(float DeltaTime)
@@ -151,6 +155,31 @@ void UMYEnemyMovingComponent::SwitchPathPoint()
 	{
 		StopMove();
 	}
+}
+
+void UMYEnemyMovingComponent::SetTargetRotation(const FRotator& NewTargetRotation)
+{
+	if (!GetOwner())
+	{
+		UE_LOG(LogTemp, Log, TEXT("No Owner"));
+		return;
+	}
+	bIsRotating = true;
+	TargetRotation = NewTargetRotation;
+}
+
+void UMYEnemyMovingComponent::TickRotateToTargetRotation(float DeltaTime)
+{
+	FVector CurrentForward = GetOwner()->GetActorForwardVector();
+	FRotator CurrentRotation = CurrentForward.Rotation();
+	FRotator NewRotation =
+		FMath::RInterpTo(
+			CurrentRotation,
+			TargetRotation,
+			DeltaTime,
+			MaxRotationSpeed
+		);
+	GetOwner()->SetActorRotation(NewRotation);
 }
 
 

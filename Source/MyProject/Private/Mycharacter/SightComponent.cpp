@@ -47,14 +47,14 @@ bool USightComponent::LinTrace()
 	IgnoreActors.Add(GetOwner());
 	IgnoreActors.Add(TargetActor);
 	bool bCanSee = CanSeeTarget(Start, End, IgnoreActors);
-	if (bCanSee)
+	/*if (bCanSee)
 	{
 		FRotator LookAtRotation = (End - Start).Rotation();
 
 		FRotator NewRotation = GetOwner()->GetActorRotation();
 		NewRotation.Yaw = LookAtRotation.Yaw;
 		GetOwner()->SetActorRotation(NewRotation);
-	}
+	}*/
 	return bCanSee;
 }
 

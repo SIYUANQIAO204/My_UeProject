@@ -37,14 +37,11 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	switch (CurrentState)
 	{
-	case ECombatState::FindPosition:
-		TickFindPosition();
-		break;
 	case ECombatState::Moving:
-		TickMoving();
+		TickMoving(DeltaTime);
 		break;
-	case ECombatState::Shooting:
-		TickShooting();
+	case ECombatState::Aiming:
+		TickAiming(DeltaTime);
 		break;
 	default:
 		break;
@@ -72,14 +69,6 @@ void UCombatComponent::EnterFindPosition()
 	RunCombatPositionQuery();
 }
 
-void UCombatComponent::ExitFindPosition()
-{
-}
-
-
-void UCombatComponent::TickFindPosition()
-{
-}
 
 void UCombatComponent::EnterMoving()
 {
@@ -100,14 +89,14 @@ void UCombatComponent::ExitMoving()
 	}
 }
 
-void UCombatComponent::TickMoving()
+void UCombatComponent::TickMoving(float DeltaTime)
 {
 	AEnemy* Enemy = Cast<AEnemy>(OwnerCharacter);
 	if (Enemy)
 	{
 		if (!Enemy->EnemyMovingComponent->IsMoving())
 		{
-			ChangeState(ECombatState::Shooting);
+			ChangeState(ECombatState::Aiming);
 		}
 	}
 }
@@ -132,9 +121,6 @@ void UCombatComponent::ExitShooting()
 	}
 }
 
-void UCombatComponent::TickShooting()
-{
-}
 
 void UCombatComponent::ChangeState(ECombatState NewState)
 {
@@ -156,8 +142,13 @@ void UCombatComponent::EnterNewState(ECombatState NewState)
 	case ECombatState::Shooting:
 		EnterShooting();
 		break;
-	default:
+	case ECombatState::Aiming:
+		EnterAiming();
+		break;
+	case ECombatState::Finished:
 		ExitCombat();
+		break;
+	default:
 		break;
 	}
 }
@@ -166,9 +157,6 @@ void UCombatComponent::ExitCurrentState()
 {
 	switch (CurrentState)
 	{
-	case ECombatState::FindPosition:
-		ExitFindPosition();
-		break;
 	case ECombatState::Moving:
 		ExitMoving();
 		break;
@@ -176,7 +164,6 @@ void UCombatComponent::ExitCurrentState()
 		ExitShooting();
 		break;
 	default:
-		ExitCombat();
 		break;
 	}
 }
@@ -231,6 +218,30 @@ void UCombatComponent::RunCombatPositionQuery()
 		this,
 		&UCombatComponent::OnCombatPositionQueryFinished
 	);
+}
+
+void UCombatComponent::EnterAiming()
+{
+	AEnemy* Enemy = Cast<AEnemy>(OwnerCharacter);
+	if (Enemy)
+	{
+		Enemy->ShootingComponent->SetAimLocation(Target->GetActorLocation());
+	}
+}
+
+
+
+void UCombatComponent::TickAiming(float DeltaTime)
+{
+	AEnemy* Enemy = Cast<AEnemy>(OwnerCharacter);
+	if (Enemy)
+	{
+		Enemy->ShootingComponent->UpdateAim(DeltaTime);
+		if (Enemy->ShootingComponent->IsAimingFinished())
+		{
+			ChangeState(ECombatState::Shooting);
+		}
+	}
 }
 
 void UCombatComponent::CheckCurrentPosition()

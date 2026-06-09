@@ -25,6 +25,14 @@ public:
 
 	void StopShooting();
 
+	void UpdateAim(float DeltaTime);
+
+	FORCEINLINE void SetAimLocation(const FVector& NewAimLocation) { AimLocation = NewAimLocation; }
+	
+	FORCEINLINE FVector GetAimLocation() const { return AimLocation; }
+	
+	bool IsAimingFinished() const;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -41,7 +49,11 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ShootBall();
 	
+	UPROPERTY(VisibleAnywhere)
+	FVector AimLocation;
 
+	UPROPERTY(EditAnywhere, Category = "Aiming")
+	float AimingSpeed = 10.0f;
 
 	FVector ApplySpreadToDirection(const FVector& Direction,bool bIsAiming) const;
 

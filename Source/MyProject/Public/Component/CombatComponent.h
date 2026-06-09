@@ -8,7 +8,6 @@
 #include "Components/ActorComponent.h"
 #include "CombatComponent.generated.h"
 
-
 class UEnvQuery;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -36,11 +35,6 @@ public:
 	UFUNCTION()
 	void EnterFindPosition();
 
-	UFUNCTION()
-	void ExitFindPosition();
-
-	UFUNCTION()
-	void TickFindPosition();
 
 	UFUNCTION()
 	void EnterMoving();
@@ -49,7 +43,7 @@ public:
 	void ExitMoving();
 
 	UFUNCTION()
-	void TickMoving();
+	void TickMoving(float DeltaTime);
 
 	UFUNCTION()
 	void EnterShooting();
@@ -57,8 +51,6 @@ public:
 	UFUNCTION()
 	void ExitShooting();
 
-	UFUNCTION()
-	void TickShooting();
 
 	UFUNCTION()
 	void ChangeState(ECombatState NewState);
@@ -72,6 +64,10 @@ public:
 	UFUNCTION()
 	void RunCombatPositionQuery();
 
+	void EnterAiming();
+
+	void TickAiming(float DeltaTime);
+
 	void CheckCurrentPosition();
 
 	void OnCombatPositionQueryFinished(TSharedPtr<FEnvQueryResult> Result);
@@ -83,6 +79,8 @@ public:
 	FORCEINLINE ECombatState GetCurrentState() const { return CurrentState; }
 
 protected:
+	
+
 	UPROPERTY(VisibleAnywhere)
 	bool bInCombat = false;
 

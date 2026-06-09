@@ -48,8 +48,6 @@ void UBTTaskNode_MyShoot::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 			}
 		}
 	}
-	FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-	return;
 }
 
 
@@ -65,5 +63,6 @@ EBTNodeResult::Type UBTTaskNode_MyShoot::AbortTask(UBehaviorTreeComponent& Owner
 			MyPawn->CombatComponent->ExitCombat();
 		}
 	}
+	UE_LOG(LogTemp, Warning, TEXT("Abort Shoot Task"));
 	return EBTNodeResult::Aborted;
 }

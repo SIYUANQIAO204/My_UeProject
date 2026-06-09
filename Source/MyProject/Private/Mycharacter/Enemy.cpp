@@ -13,6 +13,7 @@
 #include "Component/HealthComponent.h"
 #include "Component/MYEnemyMovingComponent.h"
 #include "Component/CombatComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -27,7 +28,10 @@ AEnemy::AEnemy()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 	EnemyMovingComponent = CreateDefaultSubobject<UMYEnemyMovingComponent>(TEXT("MYEnemyMovingComponent"));
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
-
+	TObjectPtr<UCharacterMovementComponent> Movement = GetCharacterMovement();
+	Movement->bOrientRotationToMovement = false;
+	Movement->bUseControllerDesiredRotation = true;
+	bUseControllerRotationYaw = true;
 }
 
 // Called when the game starts or when spawned

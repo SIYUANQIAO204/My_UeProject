@@ -26,6 +26,15 @@ UMyShootingComponent::UMyShootingComponent()
 }
 
 
+bool UMyShootingComponent::IsAimingFinished() const
+{
+	FVector ForwardVector = GetOwner()->GetActorForwardVector();
+
+	FVector ToAimTarget = (AimLocation - GetOwner()->GetActorLocation()).GetSafeNormal();
+	float DotProduct = FVector::DotProduct(ForwardVector, ToAimTarget);
+	return DotProduct > 0.99f;
+}
+
 // Called when the game starts
 void UMyShootingComponent::BeginPlay()
 {
@@ -179,6 +188,21 @@ void UMyShootingComponent::StopShooting()
 {
 	GetWorld()->GetTimerManager().ClearTimer(ShootTimerHandle);
 }
+
+void UMyShootingComponent::UpdateAim(float DeltaTime)
+{
+	if (!GetOwner()) return;
+	AController* OwnerController = Cast<AController>(GetOwner()->GetInstigatorController());
+	if (!OwnerController) return;
+	FVector AimDirection = AimLocation - GetOwner()->GetActorLocation();
+	//AimDirection.Z = 0.0f;
+	if (AimDirection.IsNearlyZero()) return;
+	FRotator DesiredRotation = AimDirection.Rotation();
+	FRotator CurrentRotation = OwnerController->GetControlRotation();
+	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, DesiredRotation, DeltaTime, AimingSpeed);
+	GetOwner()->SetActorRotation(NewRotation);
+}
+
 
 // Called every frame
 void UMyShootingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

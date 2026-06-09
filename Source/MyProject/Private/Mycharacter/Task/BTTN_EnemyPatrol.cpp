@@ -30,28 +30,17 @@ EBTNodeResult::Type UBTTN_EnemyPatrol::ExecuteTask(UBehaviorTreeComponent& Owner
 			if (BlackboardComp)
 			{
 				FVector PatrolPoint = BlackboardComp->GetValueAsVector("PatrolPoint");
-				/*FAIMoveRequest MoveRequest(PatrolPoint);
-				MoveRequest.SetAcceptanceRadius(AcceptanceRadius);
-				MoveRequest.SetUsePathfinding(true);
-				MoveRequest.SetCanStrafe(true);
-				FPathFollowingRequestResult ReqResult = AIController->MoveTo(MoveRequest);
-
-				if (ReqResult.Code == EPathFollowingRequestResult::Failed)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Failed to move to Patrol Point"));
-					return EBTNodeResult::Failed;
-
-				}*/
 				AEnemy* Enemy = Cast<AEnemy>(AIController->GetPawn());
 				if (Enemy)
 				{
+					///UE_LOG(LogTemp, Warning, TEXT("Start Enemy Patrol task to point: %s"), *PatrolPoint.ToString());
 					Enemy->MoveToTarget(PatrolPoint);
 				}
 				return EBTNodeResult::InProgress;
 			}
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Failed to execute Enemy Patrol task"));
+	//UE_LOG(LogTemp, Warning, TEXT("Failed to execute Enemy Patrol task"));
 	return EBTNodeResult::Failed;
 }
 
@@ -60,17 +49,6 @@ void UBTTN_EnemyPatrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	AMyShootAIController* AIController = Cast<AMyShootAIController>(OwnerComp.GetAIOwner());
 	if (AIController)
 	{
-		/*EPathFollowingStatus::Type MoveStatus = AIController->GetMoveStatus();
-		
-		if (MoveStatus == EPathFollowingStatus::Idle)
-		{
-			AEnemy* Enemy = Cast<AEnemy>(AIController->GetPawn());
-			if(Enemy && Enemy->PatrolComponent)
-			{
-				Enemy->PatrolComponent->MoveToNextPatrolPoint();
-			}
-			FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-		}*/
 
 		AEnemy* Enemy = Cast<AEnemy>(AIController->GetPawn());
 		if (Enemy)
@@ -82,6 +60,7 @@ void UBTTN_EnemyPatrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 				{
 					Enemy->PatrolComponent->MoveToNextPatrolPoint();
 					FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+					//UE_LOG(LogTemp, Warning, TEXT("Finished Enemy Patrol task"));
 				}
 			}
 		}
