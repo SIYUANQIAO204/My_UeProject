@@ -176,7 +176,49 @@ FVector AMyPlayer::GetMuzzleForwardVector() const
 	return MuzzleLocation ? MuzzleLocation->GetForwardVector() : GetActorForwardVector();
 }
 
+FVector AMyPlayer::GetCameraLocation() const
+{
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC && PC->PlayerCameraManager)
+	{
+		return PC->PlayerCameraManager->GetCameraLocation();
+	}
+	return FVector::ZeroVector;
+}
 
+FVector AMyPlayer::GetCameraForwardVector() const
+{
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC && PC->PlayerCameraManager)
+	{
+		return PC->PlayerCameraManager->GetCameraRotation().Vector();
+	}
+
+	return FVector::ZeroVector;
+}
+
+FVector AMyPlayer::GetAimPoint() const
+{
+	FVector Start = GetCameraLocation();
+	FVector End = Start + GetCameraForwardVector() * 10000.0f; // Trace 10,000 units ahead
+	FHitResult HitResult;
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility);
+	if (bHit)
+	{
+		return HitResult.ImpactPoint;
+	}
+	return End;
+}
+
+FRotator AMyPlayer::GetCameraRotation() const
+{
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	if (PC && PC->PlayerCameraManager)
+	{
+		return PC->PlayerCameraManager->GetCameraRotation();
+	}
+	return FRotator::ZeroRotator;
+}
 
 void AMyPlayer::Death_Implementation()
 {

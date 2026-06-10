@@ -65,6 +65,14 @@ public:
 
 	FVector GetMuzzleForwardVector() const;
 
+	FVector GetCameraLocation() const;
+
+	FVector GetCameraForwardVector() const;
+
+	FVector GetAimPoint() const;
+
+	FRotator GetCameraRotation() const;
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USpringArmComponent> CameraBoom;

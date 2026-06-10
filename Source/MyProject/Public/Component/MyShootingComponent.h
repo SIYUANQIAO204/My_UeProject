@@ -52,6 +52,15 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	FVector AimLocation;
 
+	UPROPERTY(BlueprintReadOnly)
+	FVector AimPoint;
+
+	UPROPERTY(BlueprintReadOnly)
+	FVector2D TargetCrosshairPosition;
+
+	UPROPERTY(BlueprintReadOnly)
+	FVector2D CurrentCrosshairPosition;
+
 	UPROPERTY(EditAnywhere, Category = "Aiming")
 	float AimingSpeed = 10.0f;
 

@@ -99,19 +99,23 @@ void UMyShootingComponent::ShootBall()
 				ShootDirection = PlayerOwner->GetActorForwardVector();
 			}
 		}
-		ShootDirection = ApplySpreadToDirection(ShootDirection, bIsAiming).GetSafeNormal();
+		FHitResult HitResult;
+		bool bHit = false;
+		bHit = GetWorld()->LineTraceSingleByChannel(HitResult, SpawnLocation, SpawnLocation + ShootDirection * 3000.0f, ECC_Visibility);
+		if(!bHit)
+		{
+			AimPoint = SpawnLocation + ShootDirection * 3000.0f;
+		}
+		else
+		{
+			AimPoint = HitResult.ImpactPoint;
+		} 
 		Params.SpawnDirection = ShootDirection;
 		Params.SpawnLocation = SpawnLocation;
 		FRotator SpawnRotation = ShootDirection.Rotation();
 		Params.SpawnRotation = SpawnRotation;
 		FTransform SpawnTransform(SpawnRotation, SpawnLocation);
 		SpawnParams.Owner = GetOwner();
-		/*ABallProjectile* SpawnedProjectile = GetWorld()->SpawnActorDeferred<ABallProjectile>(
-			BallProjectileClass, 
-			SpawnTransform, 
-			GetOwner(), 
-			nullptr, 
-			ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);*/
 		UE_LOG(LogTemp, Log, TEXT("MyShootingComponent: requesting AcquireBullet. SpawnLocation=%s SpawnDirection=%s"), *SpawnLocation.ToString(), *ShootDirection.ToString());
 		auto SpawnedBullet = Pool->AcquireBullet(PooledBulletClass,Params);
 		UE_LOG(LogTemp, Log, TEXT("MyShootingComponent: AcquireBullet returned %s"), SpawnedBullet ? *SpawnedBullet->GetName() : TEXT("Null"));
@@ -120,21 +124,6 @@ void UMyShootingComponent::ShootBall()
 			UE_LOG(LogTemp, Warning, TEXT("Failed to acquire bullet from pool in MyShootingComponent!"));
 			return;
 		}
-		/*if (!SpawnedProjectile)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Failed to spawn projectile in MyShootingComponent!"));
-			return;
-		}
-		if (!GetOwner() || !GetOwner()->Implements<UTeamInterface>())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Owner does not implement ITeamInterface in MyShootingComponent!"));
-			return;
-		}
-		SpawnedProjectile->InitBullet(GetOwner(), ITeamInterface::Execute_GetTeam(GetOwner()));
-		SpawnedProjectile->InitVelocity(ShootDirection);*/
-		//UE_LOG(LogTemp, Warning, TEXT("Shooting ball from %s with direction %s"), *SpawnLocation.ToString(), *ShootDirection.ToString());
-		//SpawnedProjectile->FinishSpawning(SpawnTransform);
-
 		CurrentSpreadAngle = FMath::Clamp(CurrentSpreadAngle + SpreadIncreasePerShot, 0.0f, MaxSpreadAngle);
 		CurrentVerticalKick = FMath::Clamp(CurrentVerticalKick + VerticalKickPerShot, 0.0f, MaxVerticalKick);
 		if (PlayerOwner) 
@@ -142,6 +131,12 @@ void UMyShootingComponent::ShootBall()
 			if (APlayerController* PC = Cast<APlayerController>(PlayerOwner->GetController()))
 			{
 				PC->AddPitchInput(-VerticalKickPerShot); // 上抬枪口
+				bool bProjected = PC->ProjectWorldLocationToScreen(AimPoint, TargetCrosshairPosition);
+				float Dist = FVector2D::Distance(CurrentCrosshairPosition, TargetCrosshairPosition);
+				if (Dist > 2.f && bProjected)
+				{
+					CurrentCrosshairPosition = FMath::Vector2DInterpTo(CurrentCrosshairPosition, TargetCrosshairPosition, GetWorld()->GetDeltaSeconds(), 15.0f);
+				}
 			}
 			PlayShotCameraShake(bIsAiming);
 		}
