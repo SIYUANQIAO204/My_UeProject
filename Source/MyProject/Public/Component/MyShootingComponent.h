@@ -21,15 +21,19 @@ public:
 	// Sets default values for this component's properties
 	UMyShootingComponent();
 
-	void StartShooting();
+	void StartShooting(FVector SpawnLocation);
 
 	void StopShooting();
 
 	void UpdateAim(float DeltaTime);
 
+	void UpdateAimPoint(float DeltaTime);
+
 	FORCEINLINE void SetAimLocation(const FVector& NewAimLocation) { AimLocation = NewAimLocation; }
 	
 	FORCEINLINE FVector GetAimLocation() const { return AimLocation; }
+
+	FORCEINLINE FVector GetAimPoint() const { return AimPoint; }
 	
 	bool IsAimingFinished() const;
 
@@ -52,14 +56,12 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	FVector AimLocation;
 
+	UPROPERTY(VisibleAnywhere)
+	FVector BulletSpawnLocation;
+
 	UPROPERTY(BlueprintReadOnly)
 	FVector AimPoint;
 
-	UPROPERTY(BlueprintReadOnly)
-	FVector2D TargetCrosshairPosition;
-
-	UPROPERTY(BlueprintReadOnly)
-	FVector2D CurrentCrosshairPosition;
 
 	UPROPERTY(EditAnywhere, Category = "Aiming")
 	float AimingSpeed = 10.0f;

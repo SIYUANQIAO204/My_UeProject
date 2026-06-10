@@ -31,11 +31,7 @@ public:
 	UFUNCTION()
 	void StopPatrolSpline();
 
-	UFUNCTION()
-	void StartShooting();
 
-	UFUNCTION()
-	void StopShooting();
 
 protected:
 	virtual void BeginPlay() override;

@@ -106,7 +106,7 @@ void UCombatComponent::EnterShooting()
 	AEnemy* Enemy = Cast<AEnemy>(OwnerCharacter);
 	if (Enemy)
 	{
-		Enemy->ShootingComponent->StartShooting();
+		Enemy->ShootingComponent->StartShooting(Enemy->GetActorLocation()+Enemy->GetActorForwardVector() * 40.0f);
 		GetWorld()->GetTimerManager().SetTimer(CombatPositionQueryHandler, this, &UCombatComponent::CheckCurrentPosition, 5.f, true);
 	}
 }

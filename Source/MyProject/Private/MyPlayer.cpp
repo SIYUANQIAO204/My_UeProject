@@ -73,6 +73,7 @@ void AMyPlayer::BeginPlay()
 	{
 		PlayerController->UpdateHealthWidget(HealthComponent->GetHealthPercentage());
 	}
+	ShootingComponent->SetAimLocation(GetAimPoint());
 }
 
 void AMyPlayer::Move(const FInputActionValue& value)
@@ -105,7 +106,7 @@ void AMyPlayer::OnAimPressed()
 	if (!PlayerController) return;
 	PlayerController->SetAiming(true);
 	bIsAiming = true;
-	AimComponent->SetIsAiming(true);
+	//AimComponent->SetIsAiming(true);
 
 	// 保存原始设置
 	OriginalCameraBoomLocation = CameraBoom->GetRelativeLocation();
@@ -126,7 +127,7 @@ void AMyPlayer::OnAimReleased()
 	if (!PlayerController) return;
 	PlayerController->SetAiming(false);
 	bIsAiming = false;
-	AimComponent->SetIsAiming(false);
+	//AimComponent->SetIsAiming(false);
 
 	// 恢复原始设置
 	CameraBoom->SetRelativeLocation(OriginalCameraBoomLocation);
@@ -141,13 +142,7 @@ void AMyPlayer::OnAimReleased()
 void AMyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (bIsAiming) 
-	{
-		AimDirection = AimComponent->GetAimDirection(
-			MuzzleLocation->GetComponentLocation(), AimDirection)
-			? AimDirection
-			: MuzzleLocation->GetForwardVector();
-	}
+	ShootingComponent->SetAimLocation(GetAimPoint());
 }
 
 // Called to bind functionality to input
@@ -157,13 +152,19 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	UE_LOG(LogTemp, Warning, TEXT("SetupPlayerInputComponent Called"));
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
+		FVector SpawnLocation = GetMuzzleLocation();
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyPlayer::Look);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyPlayer::Move);
-		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, ShootingComponent.Get(), &UMyShootingComponent::StartShooting);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &AMyPlayer::OnShootPressed);
 		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, ShootingComponent.Get(), &UMyShootingComponent::StopShooting);
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Started, this, &AMyPlayer::OnAimPressed);
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &AMyPlayer::OnAimReleased);
 	}
+}
+
+void AMyPlayer::OnShootPressed()
+{
+	ShootingComponent->StartShooting(GetMuzzleLocation());
 }
 
 FVector AMyPlayer::GetMuzzleLocation() const
@@ -199,13 +200,21 @@ FVector AMyPlayer::GetCameraForwardVector() const
 
 FVector AMyPlayer::GetAimPoint() const
 {
-	FVector Start = GetCameraLocation();
-	FVector End = Start + GetCameraForwardVector() * 10000.0f; // Trace 10,000 units ahead
+	FVector Start;
+	FVector End;
+	if (bIsAiming) {
+		Start = GetCameraLocation();
+		End = Start + GetCameraForwardVector() * 10000.0f; // Trace 10,000 units ahead
+	}
+	else {
+		Start = GetMuzzleLocation();
+		End = Start + GetMuzzleForwardVector() * 10000.0f; // Trace 10,000 units ahead
+	}
 	FHitResult HitResult;
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility);
 	if (bHit)
 	{
-		return HitResult.ImpactPoint;
+		return HitResult.Location;
 	}
 	return End;
 }

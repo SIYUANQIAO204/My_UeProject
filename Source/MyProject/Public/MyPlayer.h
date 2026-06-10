@@ -61,6 +61,8 @@ public:
 
 	FORCEINLINE FVector GetAimDirection() const { return AimDirection; }
 
+	void OnShootPressed();
+
 	FVector GetMuzzleLocation() const;
 
 	FVector GetMuzzleForwardVector() const;

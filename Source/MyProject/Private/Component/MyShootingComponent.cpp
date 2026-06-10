@@ -29,7 +29,6 @@ UMyShootingComponent::UMyShootingComponent()
 bool UMyShootingComponent::IsAimingFinished() const
 {
 	FVector ForwardVector = GetOwner()->GetActorForwardVector();
-
 	FVector ToAimTarget = (AimLocation - GetOwner()->GetActorLocation()).GetSafeNormal();
 	float DotProduct = FVector::DotProduct(ForwardVector, ToAimTarget);
 	return DotProduct > 0.99f;
@@ -74,51 +73,13 @@ void UMyShootingComponent::ShootBall()
 
 	if (PooledBulletClass)
 	{
-
-		FVector SpawnLocation = GetOwner()->GetActorLocation()+GetOwner()->GetActorForwardVector() * 40.0f;
-		FVector ShootDirection = GetOwner()->GetActorForwardVector();
+		FVector ShootDirection = AimLocation - BulletSpawnLocation;
 		AMyPlayer* PlayerOwner = Cast<AMyPlayer>(GetOwner());
-		const bool bIsAiming = PlayerOwner ? PlayerOwner->GetIsAiming() : false;
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = GetOwner();
-		if (PlayerOwner)
-		{
-			SpawnLocation = PlayerOwner->GetMuzzleLocation();
-			if (bIsAiming)
-			{
-				ShootDirection = PlayerOwner->GetAimDirection();
-			}
-			else if (APlayerController* PC = Cast<APlayerController>(PlayerOwner->GetController()))
-			{
-				ShootDirection = PC->PlayerCameraManager
-					? PC->PlayerCameraManager->GetCameraRotation().Vector()
-					: PlayerOwner->GetActorForwardVector();
-			}
-			else
-			{
-				ShootDirection = PlayerOwner->GetActorForwardVector();
-			}
-		}
-		FHitResult HitResult;
-		bool bHit = false;
-		bHit = GetWorld()->LineTraceSingleByChannel(HitResult, SpawnLocation, SpawnLocation + ShootDirection * 3000.0f, ECC_Visibility);
-		if(!bHit)
-		{
-			AimPoint = SpawnLocation + ShootDirection * 3000.0f;
-		}
-		else
-		{
-			AimPoint = HitResult.ImpactPoint;
-		} 
 		Params.SpawnDirection = ShootDirection;
-		Params.SpawnLocation = SpawnLocation;
+		Params.SpawnLocation = BulletSpawnLocation;
 		FRotator SpawnRotation = ShootDirection.Rotation();
 		Params.SpawnRotation = SpawnRotation;
-		FTransform SpawnTransform(SpawnRotation, SpawnLocation);
-		SpawnParams.Owner = GetOwner();
-		UE_LOG(LogTemp, Log, TEXT("MyShootingComponent: requesting AcquireBullet. SpawnLocation=%s SpawnDirection=%s"), *SpawnLocation.ToString(), *ShootDirection.ToString());
 		auto SpawnedBullet = Pool->AcquireBullet(PooledBulletClass,Params);
-		UE_LOG(LogTemp, Log, TEXT("MyShootingComponent: AcquireBullet returned %s"), SpawnedBullet ? *SpawnedBullet->GetName() : TEXT("Null"));
 		if (!SpawnedBullet || !Cast<APooledBullet>(SpawnedBullet))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Failed to acquire bullet from pool in MyShootingComponent!"));
@@ -131,14 +92,7 @@ void UMyShootingComponent::ShootBall()
 			if (APlayerController* PC = Cast<APlayerController>(PlayerOwner->GetController()))
 			{
 				PC->AddPitchInput(-VerticalKickPerShot); // 上抬枪口
-				bool bProjected = PC->ProjectWorldLocationToScreen(AimPoint, TargetCrosshairPosition);
-				float Dist = FVector2D::Distance(CurrentCrosshairPosition, TargetCrosshairPosition);
-				if (Dist > 2.f && bProjected)
-				{
-					CurrentCrosshairPosition = FMath::Vector2DInterpTo(CurrentCrosshairPosition, TargetCrosshairPosition, GetWorld()->GetDeltaSeconds(), 15.0f);
-				}
 			}
-			PlayShotCameraShake(bIsAiming);
 		}
 	}
 }
@@ -174,13 +128,24 @@ void UMyShootingComponent::PlayShotCameraShake(bool bIsAiming) const
 	PlayerController->PlayerCameraManager->StartCameraShake(ShotCameraShakeClass, Scale);
 }
 
-void UMyShootingComponent::StartShooting()
+void UMyShootingComponent::StartShooting(FVector SpawnLocation)
 {
+	BulletSpawnLocation = SpawnLocation;
+	if (!GetWorld())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cannot start shooting: World context is null in MyShootingComponent!"));
+		return;
+	}
 	GetWorld()->GetTimerManager().SetTimer(ShootTimerHandle, this, &UMyShootingComponent::ShootBall, FireDelay, true);
 }
 
 void UMyShootingComponent::StopShooting()
 {
+	if (!GetWorld())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cannot stop shooting: World context is null in MyShootingComponent!"));
+		return;
+	}
 	GetWorld()->GetTimerManager().ClearTimer(ShootTimerHandle);
 }
 
@@ -198,6 +163,22 @@ void UMyShootingComponent::UpdateAim(float DeltaTime)
 	GetOwner()->SetActorRotation(NewRotation);
 }
 
+void UMyShootingComponent::UpdateAimPoint(float DeltaTime)
+{
+	FVector ShootDirection = AimLocation - BulletSpawnLocation;
+	FHitResult HitResult;
+	bool bHit = false;
+	bHit = GetWorld()->LineTraceSingleByChannel(HitResult, BulletSpawnLocation, BulletSpawnLocation + ShootDirection * 3000.0f, ECC_Visibility);
+	if (!bHit)
+	{
+		AimPoint = BulletSpawnLocation + ShootDirection * 3000.0f;
+	}
+	else
+	{
+		AimPoint = HitResult.ImpactPoint;
+	}
+}
+
 
 // Called every frame
 void UMyShootingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -205,6 +186,7 @@ void UMyShootingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	CurrentSpreadAngle = FMath::FInterpTo(CurrentSpreadAngle, 0.0f, DeltaTime, SpreadRecoveryRate);
 	CurrentVerticalKick = FMath::FInterpTo(CurrentVerticalKick, 0.0f, DeltaTime, VerticalRecoverSpeed);
+	UpdateAimPoint(DeltaTime);
 	// ...
 }
 

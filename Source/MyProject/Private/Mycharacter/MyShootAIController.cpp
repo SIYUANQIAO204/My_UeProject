@@ -16,9 +16,6 @@ AMyShootAIController::AMyShootAIController()
 	bSetControlRotationFromPawnOrientation = true;
 }
 
-void AMyShootAIController::StopShooting()
-{
-}
 
 void AMyShootAIController::BeginPlay()
 {
@@ -78,6 +75,3 @@ void AMyShootAIController::StopPatrolSpline()
 	}
 }
 
-void AMyShootAIController::StartShooting()
-{
-}
