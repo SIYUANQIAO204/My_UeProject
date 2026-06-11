@@ -18,6 +18,7 @@ class UMyShootingComponent;
 class UAimComponent;
 class ULuaSubsystem;
 class UArrowComponent;
+class UCrosshairComponent;
 struct FInputActionValue;
 
 UCLASS()
@@ -105,7 +106,10 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Shooting")
 	TObjectPtr<UMyShootingComponent> ShootingComponent;
-	
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UCrosshairComponent> CrosshairComponent;
+
 	UPROPERTY()
 	TObjectPtr<ULuaSubsystem> LuaSubsystem;
 

@@ -16,6 +16,7 @@
 #include "Subsystem/LuaSubsystem.h"
 #include "AimComponent.h"
 #include "Components/ArrowComponent.h"
+#include "Component/CrosshairComponent.h"
 
 // Sets default values
 AMyPlayer::AMyPlayer()
@@ -52,6 +53,9 @@ AMyPlayer::AMyPlayer()
 	MuzzleLocation->SetupAttachment(GetMesh()); // Attach to the character's mesh at the "MuzzleSocket" socket
 	MuzzleLocation->SetRelativeLocation(FVector(40.0f, 0.0f, 60.0f)); // Adjust as needed to position the muzzle correctly
 	MuzzleLocation->SetRelativeRotation(FRotator::ZeroRotator); // Adjust as needed to orient the muzzle correctly
+
+	CrosshairComponent = CreateDefaultSubobject<UCrosshairComponent>(TEXT("CrosshairComponent"));
+
 }
 
 // Called when the game starts or when spawned
@@ -143,6 +147,16 @@ void AMyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	ShootingComponent->SetAimLocation(GetAimPoint());
+	if (bIsAiming)
+	{
+		CrosshairComponent->SetAimPoint(GetAimPoint());
+		CrosshairComponent->UpdateScreenPosition(DeltaTime);
+		AMyPlayerController* PlayerController = Cast<AMyPlayerController>(GetController());
+		if (PlayerController)
+		{
+			PlayerController->UpdateCrosshairScreenPoint(CrosshairComponent ->GetCurrentScreenPosition());
+		}
+	}
 }
 
 // Called to bind functionality to input

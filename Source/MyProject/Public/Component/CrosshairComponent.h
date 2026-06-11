@@ -43,11 +43,21 @@ protected:
 	float AimVisibilityDistance = 500.0f;
 
 	UPROPERTY(EditAnywhere)
-	float AimDeadZoneRadius = 50.0f;
+	float AimDeadZoneRadius = 10.0f;
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	bool ProjectAimPointToScreen();
+
+	void UpdateScreenPosition(float DeltaTime);
+
+	FORCEINLINE bool IsAimVisible() const { return bIsAimVisible; }
+
+	FORCEINLINE void SetAimPoint(const FVector& NewAimPoint) { AimPoint = NewAimPoint; }
+
+	FORCEINLINE FVector2D GetCurrentScreenPosition() const { return CurrentScreenPosition; }
 
 private:
 		

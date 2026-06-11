@@ -33,6 +33,8 @@ public:
 
 	void SetAiming(bool bIsAiming);
 
+	void UpdateCrosshairScreenPoint(FVector2D ScreenPosition);
+
 protected:
 	virtual void BeginPlay() override;
 

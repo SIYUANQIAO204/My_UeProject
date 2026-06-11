@@ -74,9 +74,21 @@ void AMyPlayerController::SetAiming(bool bIsAiming)
 	if (bIsAiming)
 	{
 		HUD->ShowAimWidget();
+		HUD->ShowCrosshair();
 	}
 	else
 	{
 		HUD->HideAimWidget();
+		HUD->HideCrosshair();
 	}
+}
+
+void AMyPlayerController::UpdateCrosshairScreenPoint(FVector2D ScreenPosition)
+{
+	AMyOwnHUD* HUD = Cast<AMyOwnHUD>(GetHUD());
+	if (!HUD)
+	{
+		return;
+	}
+	HUD->UpdateCrosshair(ScreenPosition);
 }

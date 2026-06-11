@@ -5,6 +5,7 @@
 #include "HUD/MyHealthWidget.h"
 #include "HUD/HealthWaringWidget.h"
 #include "HUD/AimWidget.h"
+#include "HUD/InnerCrooshair.h"
 
 void AMyOwnHUD::CreateHealthWidget()
 {
@@ -46,6 +47,43 @@ void AMyOwnHUD::ShowAimWidget()
 			AimWidgetInstance->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		}
 		
+	}
+}
+
+void AMyOwnHUD::ShowCrosshair()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (CrosshairClass != nullptr)
+	{
+		if (CrosshairInstance == nullptr)
+		{
+			CrosshairInstance = CreateWidget<UInnerCrooshair>(PlayerController, CrosshairClass);
+			if (CrosshairInstance != nullptr)
+			{
+				CrosshairInstance->AddToViewport();
+			}
+		}
+		else
+		{
+			CrosshairInstance->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		}
+
+	}
+}
+
+void AMyOwnHUD::HideCrosshair()
+{
+	if (CrosshairInstance != nullptr)
+	{
+		CrosshairInstance->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void AMyOwnHUD::UpdateCrosshair(FVector2D ScreenPosition)
+{
+	if (CrosshairInstance != nullptr)
+	{
+		CrosshairInstance->SetPositionInViewport(ScreenPosition);
 	}
 }
 

@@ -9,6 +9,8 @@
 class UMyHealthWidget;
 class UHealthWaringWidget;
 class UAimWidget;
+class UInnerCrooshair;
+
 
 /**
  * 
@@ -28,6 +30,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UAimWidget> AimWidgetClass;
 
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UInnerCrooshair> CrosshairClass;
+
 	UPROPERTY()
 	TObjectPtr<UMyHealthWidget> WidgetInstance;
 
@@ -37,11 +42,20 @@ public:
 	UPROPERTY()
 	TObjectPtr<UHealthWaringWidget> HealthWarningWidgetInstance;
 
+	UPROPERTY()
+	TObjectPtr<UInnerCrooshair> CrosshairInstance;
+
 	void CreateHealthWidget();
 
 	void UpdateHealthWidget(float HealthPercent);
 
 	void ShowAimWidget();
+
+	void ShowCrosshair();
+
+	void HideCrosshair();
+
+	void UpdateCrosshair(FVector2D ScreenPosition);
 
 	void HideAimWidget();
 
