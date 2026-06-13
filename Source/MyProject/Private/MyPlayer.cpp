@@ -17,6 +17,7 @@
 #include "AimComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Component/CrosshairComponent.h"
+#include "Component/RecoilComponent.h"
 
 // Sets default values
 AMyPlayer::AMyPlayer()
@@ -55,6 +56,8 @@ AMyPlayer::AMyPlayer()
 	MuzzleLocation->SetRelativeRotation(FRotator::ZeroRotator); // Adjust as needed to orient the muzzle correctly
 
 	CrosshairComponent = CreateDefaultSubobject<UCrosshairComponent>(TEXT("CrosshairComponent"));
+
+	RecoilComponent = CreateDefaultSubobject<URecoilComponent>(TEXT("RecoilComponent"));
 
 }
 
@@ -146,7 +149,20 @@ void AMyPlayer::OnAimReleased()
 void AMyPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	ShootingComponent->SetBulletSpawnLocation(GetMuzzleLocation());
 	ShootingComponent->SetAimLocation(GetAimPoint());
+	APlayerController* PC = Cast<APlayerController>(GetController());
+	PreviousWeaponOffset = CurrentWeaponOffset;
+	CurrentWeaponOffset = RecoilComponent->GetWeaponRecoilOffset();
+	FVector WeaponDelta = CurrentWeaponOffset - PreviousWeaponOffset;
+	MuzzleLocation->SetRelativeRotation(FRotator(WeaponDelta.X, WeaponDelta.Y, WeaponDelta.Z));
+	if (PC)
+	{
+		PreviousCameraOffset = CurrentCameraOffset;
+		CurrentCameraOffset = RecoilComponent->GetCameraRecoilOffset();
+		FVector Delta = CurrentCameraOffset - PreviousCameraOffset;
+		PC->SetControlRotation(PC->GetControlRotation() + FRotator(Delta.X, Delta.Y, Delta.Z));
+	}
 	if (bIsAiming)
 	{
 		CrosshairComponent->SetAimPoint(GetAimPoint());
@@ -176,9 +192,14 @@ void AMyPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	}
 }
 
+void AMyPlayer::ApplyRecoil(const FAngularImpulse& Impulse)
+{
+	RecoilComponent->ApplyRecoil(Impulse);
+}
+
 void AMyPlayer::OnShootPressed()
 {
-	ShootingComponent->StartShooting(GetMuzzleLocation());
+	ShootingComponent->StartShooting();
 }
 
 FVector AMyPlayer::GetMuzzleLocation() const

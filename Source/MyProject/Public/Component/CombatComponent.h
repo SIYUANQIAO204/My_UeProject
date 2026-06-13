@@ -51,6 +51,8 @@ public:
 	UFUNCTION()
 	void ExitShooting();
 
+	UFUNCTION()
+	void TickShooting(float DeltaTime);
 
 	UFUNCTION()
 	void ChangeState(ECombatState NewState);

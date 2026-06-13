@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "enum/TeamTypes.h"
+#include "Recoil/RecoilTypes.h"
 #include "../Interface/HealthInterface.h"
 #include "Interface/TeamInterface.h"
 #include "MyPlayer.generated.h"
@@ -20,6 +21,7 @@ class ULuaSubsystem;
 class UArrowComponent;
 class UCrosshairComponent;
 struct FInputActionValue;
+class URecoilComponent;
 
 UCLASS()
 class MYPROJECT_API AMyPlayer : public ACharacter, public IHealthInterface, public ITeamInterface
@@ -61,6 +63,8 @@ public:
 	FORCEINLINE bool GetIsAiming() const { return bIsAiming; }
 
 	FORCEINLINE FVector GetAimDirection() const { return AimDirection; }
+
+	void ApplyRecoil(const FAngularImpulse& Impulse);
 
 	void OnShootPressed();
 
@@ -110,6 +114,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UCrosshairComponent> CrosshairComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Recoil", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<URecoilComponent> RecoilComponent;
+
 	UPROPERTY()
 	TObjectPtr<ULuaSubsystem> LuaSubsystem;
 
@@ -130,6 +137,18 @@ private:
 
 	FVector OriginalCameraBoomLocation;
 	float OriginalCameraBoomLength = 300.0f;
+
+	UPROPERTY(VisibleAnywhere)
+	FVector PreviousCameraOffset = FVector::ZeroVector;
+
+	UPROPERTY(VisibleAnywhere)
+	FVector PreviousWeaponOffset = FVector::ZeroVector;
+
+	UPROPERTY(VisibleAnywhere)
+	FVector CurrentCameraOffset = FVector::ZeroVector;
+
+	UPROPERTY(VisibleAnywhere)
+	FVector CurrentWeaponOffset = FVector::ZeroVector;
 
 
 };

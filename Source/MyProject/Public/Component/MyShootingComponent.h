@@ -5,12 +5,45 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "ExtraData/BulletData.h"
+#include "Recoil/RecoilTypes.h"
 #include "MyShootingComponent.generated.h"
 
 class ABallProjectile;
 class USceneComponent;
 class UCameraShakeBase;
 class APooledBullet;
+
+USTRUCT(BlueprintType)
+struct FAxisNoiseConfig
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spread")
+	float Mean = 0.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spread")
+	float Sigma = 0.3f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spread")
+	float MaxAbs = 1.0f;
+
+};
+
+USTRUCT(BlueprintType)
+struct FSpreadConfig
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spread")
+	FAxisNoiseConfig Yaw;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spread")
+	FAxisNoiseConfig Roll;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spread")
+	float PitchSpreadAngle = 3.0f;
+
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MYPROJECT_API UMyShootingComponent : public UActorComponent
@@ -21,19 +54,25 @@ public:
 	// Sets default values for this component's properties
 	UMyShootingComponent();
 
-	void StartShooting(FVector SpawnLocation);
+	void StartShooting();
 
 	void StopShooting();
 
 	void UpdateAim(float DeltaTime);
 
+	FAngularImpulse GenerateRecoilImpulse() const;
+
 	void UpdateAimPoint(float DeltaTime);
 
 	FORCEINLINE void SetAimLocation(const FVector& NewAimLocation) { AimLocation = NewAimLocation; }
+
+	FORCEINLINE void SetBulletSpawnLocation(const FVector& NewSpawnLocation) { BulletSpawnLocation = NewSpawnLocation; }
 	
 	FORCEINLINE FVector GetAimLocation() const { return AimLocation; }
 
 	FORCEINLINE FVector GetAimPoint() const { return AimPoint; }
+
+	float GetImpluseAxisValue(FAxisNoiseConfig AxisConfig) const;
 	
 	bool IsAimingFinished() const;
 
@@ -66,9 +105,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Aiming")
 	float AimingSpeed = 10.0f;
 
-	FVector ApplySpreadToDirection(const FVector& Direction,bool bIsAiming) const;
+	//FVector ApplySpreadToDirection(const FVector& Direction,bool bIsAiming) const;
 
-	void PlayShotCameraShake(bool bIsAiming) const;
+	//void PlayShotCameraShake(bool bIsAiming) const;
+
+	UPROPERTY(EditAnywhere, Category = "Spread")
+	FSpreadConfig SpreadConfig;
 
 public:	
 	// Called every frame
@@ -79,8 +121,8 @@ public:
 
 	FTimerHandle ShootTimerHandle;
 
-private:
-	UPROPERTY(EditAnywhere, Category = "Recoil")
+//private:
+	/*UPROPERTY(EditAnywhere, Category = "Recoil")
 	float HipFireSpreadAngle = 2.5f;
 
 	UPROPERTY(EditAnywhere, Category = "Recoil")
@@ -120,6 +162,6 @@ private:
 	float VerticalRecoverSpeed = 8.0f; // 松开后恢复速度
 
 	UPROPERTY(VisibleAnywhere, Category = "Recoil")
-	float CurrentVerticalKick = 0.0f;
+	float CurrentVerticalKick = 0.0f;*/
 
 };

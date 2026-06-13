@@ -43,6 +43,9 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	case ECombatState::Aiming:
 		TickAiming(DeltaTime);
 		break;
+	case ECombatState::Shooting:
+		TickShooting(DeltaTime);
+		break;
 	default:
 		break;
 	}
@@ -106,7 +109,7 @@ void UCombatComponent::EnterShooting()
 	AEnemy* Enemy = Cast<AEnemy>(OwnerCharacter);
 	if (Enemy)
 	{
-		Enemy->ShootingComponent->StartShooting(Enemy->GetActorLocation()+Enemy->GetActorForwardVector() * 40.0f);
+		Enemy->ShootingComponent->StartShooting();
 		GetWorld()->GetTimerManager().SetTimer(CombatPositionQueryHandler, this, &UCombatComponent::CheckCurrentPosition, 5.f, true);
 	}
 }
@@ -118,6 +121,15 @@ void UCombatComponent::ExitShooting()
 	{
 		Enemy->ShootingComponent->StopShooting();
 		GetWorld()->GetTimerManager().ClearTimer(CombatPositionQueryHandler);
+	}
+}
+
+void UCombatComponent::TickShooting(float DeltaTime)
+{
+	AEnemy* Enemy = Cast<AEnemy>(OwnerCharacter);
+	if (Enemy)
+	{
+		Enemy->ShootingComponent->SetBulletSpawnLocation(Enemy->GetActorLocation() + Enemy->GetActorForwardVector() * 40.0f);
 	}
 }
 

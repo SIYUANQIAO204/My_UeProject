@@ -13,7 +13,8 @@
 #include "ObjectPool/MyBulletObjectPoolSubSystem.h"
 #include "Projectile/PooledBullet.h"
 #include "Camera/CameraShakeBase.h"
-
+#include "Component/RecoilComponent.h"
+#include "Math/UnrealMathUtility.h"
 
 // Sets default values for this component's properties
 UMyShootingComponent::UMyShootingComponent()
@@ -25,6 +26,22 @@ UMyShootingComponent::UMyShootingComponent()
 	// ...
 }
 
+
+float UMyShootingComponent::GetImpluseAxisValue(FAxisNoiseConfig AxisConfig) const
+{
+	while (true)
+	{
+		float U1 = FMath::FRand();
+		float U2 = FMath::FRand();
+		float Value = FMath::Sqrt(-2.0f * FMath::Loge(U1)) * FMath::Cos(2.0f * PI * U2);
+		Value *= AxisConfig.Sigma;
+		if(abs(Value) <= AxisConfig.MaxAbs)
+		{
+			return Value + AxisConfig.Mean;
+		}
+	}
+	return 0.0f;
+}
 
 bool UMyShootingComponent::IsAimingFinished() const
 {
@@ -85,7 +102,11 @@ void UMyShootingComponent::ShootBall()
 			UE_LOG(LogTemp, Warning, TEXT("Failed to acquire bullet from pool in MyShootingComponent!"));
 			return;
 		}
-		CurrentSpreadAngle = FMath::Clamp(CurrentSpreadAngle + SpreadIncreasePerShot, 0.0f, MaxSpreadAngle);
+		if (PlayerOwner)
+		{
+			PlayerOwner->ApplyRecoil(GenerateRecoilImpulse());
+		}
+		/*CurrentSpreadAngle = FMath::Clamp(CurrentSpreadAngle + SpreadIncreasePerShot, 0.0f, MaxSpreadAngle);
 		CurrentVerticalKick = FMath::Clamp(CurrentVerticalKick + VerticalKickPerShot, 0.0f, MaxVerticalKick);
 		if (PlayerOwner) 
 		{
@@ -93,11 +114,11 @@ void UMyShootingComponent::ShootBall()
 			{
 				PC->AddPitchInput(-VerticalKickPerShot); // 上抬枪口
 			}
-		}
+		}*/
 	}
 }
 
-FVector UMyShootingComponent::ApplySpreadToDirection(const FVector& Direction, bool bIsAiming) const
+/*FVector UMyShootingComponent::ApplySpreadToDirection(const FVector& Direction, bool bIsAiming) const
 {
 	const float BaseSpread = bIsAiming ? AimSpreadAngle : HipFireSpreadAngle;
 	const float FinalSpreadDeg = FMath::Clamp(BaseSpread + CurrentSpreadAngle, 0.0f, MaxSpreadAngle);
@@ -113,9 +134,9 @@ FVector UMyShootingComponent::ApplySpreadToDirection(const FVector& Direction, b
 	R.Yaw += FMath::FRandRange(-HorizontalJitter, HorizontalJitter) * AimMul;
 
 	return R.Vector().GetSafeNormal();
-}
+}*/
 
-void UMyShootingComponent::PlayShotCameraShake(bool bIsAiming) const
+/*void UMyShootingComponent::PlayShotCameraShake(bool bIsAiming) const
 {
 	if (!ShotCameraShakeClass) return;
 	const APawn* OwnerPawn = Cast<APawn>(GetOwner());
@@ -126,11 +147,10 @@ void UMyShootingComponent::PlayShotCameraShake(bool bIsAiming) const
 	const float Scale = bIsAiming ? CameraShakeScaleAim : ShotCameraShakeScale;
 	PlayerController->PlayerCameraManager->StopAllInstancesOfCameraShake(ShotCameraShakeClass, false);
 	PlayerController->PlayerCameraManager->StartCameraShake(ShotCameraShakeClass, Scale);
-}
+}*/
 
-void UMyShootingComponent::StartShooting(FVector SpawnLocation)
+void UMyShootingComponent::StartShooting()
 {
-	BulletSpawnLocation = SpawnLocation;
 	if (!GetWorld())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Cannot start shooting: World context is null in MyShootingComponent!"));
@@ -163,6 +183,15 @@ void UMyShootingComponent::UpdateAim(float DeltaTime)
 	GetOwner()->SetActorRotation(NewRotation);
 }
 
+FAngularImpulse UMyShootingComponent::GenerateRecoilImpulse() const
+{
+	FAngularImpulse RecoilImpulse;
+	RecoilImpulse.Torque.X = SpreadConfig.PitchSpreadAngle;
+	RecoilImpulse.Torque.Y = GetImpluseAxisValue(SpreadConfig.Yaw);
+	RecoilImpulse.Torque.Z = GetImpluseAxisValue(SpreadConfig.Roll);
+	return RecoilImpulse;
+}
+
 void UMyShootingComponent::UpdateAimPoint(float DeltaTime)
 {
 	FVector ShootDirection = AimLocation - BulletSpawnLocation;
@@ -184,8 +213,8 @@ void UMyShootingComponent::UpdateAimPoint(float DeltaTime)
 void UMyShootingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	CurrentSpreadAngle = FMath::FInterpTo(CurrentSpreadAngle, 0.0f, DeltaTime, SpreadRecoveryRate);
-	CurrentVerticalKick = FMath::FInterpTo(CurrentVerticalKick, 0.0f, DeltaTime, VerticalRecoverSpeed);
+	//CurrentSpreadAngle = FMath::FInterpTo(CurrentSpreadAngle, 0.0f, DeltaTime, SpreadRecoveryRate);
+	//CurrentVerticalKick = FMath::FInterpTo(CurrentVerticalKick, 0.0f, DeltaTime, VerticalRecoverSpeed);
 	UpdateAimPoint(DeltaTime);
 	// ...
 }
